@@ -134,7 +134,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // 暫定の走行性能
   const maxSpeed = 80;
-  const maxAcceleration = 0.90;
+
+  // ★ 最大加速度を0.90から1.30に変更
+  const maxAcceleration = 1.30;
+
   const maxBraking = 1.00;
 
   // 惰行時の自然減速
