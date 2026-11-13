@@ -623,3 +623,185 @@ footer {
     min-height: 75px;
   }
 }
+
+/* ========================================
+   Landscape orientation support
+======================================== */
+
+/* 縦向きのときは横向きへの変更を案内 */
+@media (orientation: portrait) {
+  body::after {
+    content: "⟳\A端末を横向きにしてください\A\Aこのゲームは横画面に最適化されています。";
+    white-space: pre-line;
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 25px;
+    background:
+      radial-gradient(ellipse at 50% 35%, #1b3158 0%, transparent 60%),
+      linear-gradient(145deg, #080e20, #101a35 55%, #080d1d);
+    color: var(--text);
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 2.2;
+    letter-spacing: 0.08em;
+  }
+}
+
+/* 横向き・画面の高さが小さい端末向け */
+@media (orientation: landscape) and (max-height: 520px) {
+  .site-header {
+    min-height: 58px;
+    padding: 8px 4%;
+  }
+
+  .brand-mark {
+    font-size: 27px;
+  }
+
+  .brand-text strong {
+    font-size: 17px;
+  }
+
+  #main-content {
+    padding-top: 15px;
+    padding-bottom: 20px;
+  }
+
+  /* タイトルとメニューを左右に配置 */
+  #home-screen {
+    display: none;
+  }
+
+  #home-screen.active {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .hero {
+    padding: 10px;
+  }
+
+  .hero h1 {
+    font-size: clamp(34px, 6vw, 52px);
+  }
+
+  .intro {
+    margin-top: 12px;
+    font-size: 12px;
+  }
+
+  .eyebrow {
+    margin-bottom: 8px;
+    font-size: 9px;
+  }
+
+  .main-menu {
+    width: 100%;
+    margin: 0;
+    gap: 10px;
+  }
+
+  .menu-button {
+    min-height: 72px;
+    padding: 10px;
+  }
+
+  .menu-icon {
+    font-size: 21px;
+  }
+
+  .menu-label {
+    gap: 4px;
+  }
+
+  .menu-label strong {
+    font-size: 12px;
+  }
+
+  .menu-label small {
+    font-size: 9px;
+  }
+
+  .page-heading {
+    margin-bottom: 15px;
+  }
+
+  .page-heading h2 {
+    font-size: 24px;
+  }
+
+  .route-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .route-card {
+    min-height: 62px;
+    padding: 10px 12px;
+  }
+
+  .station-route-list {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .line-card {
+    padding: 13px;
+  }
+
+  .line-card h3 {
+    font-size: 14px;
+    margin-bottom: 7px;
+  }
+
+  .line-card p {
+    font-size: 10px;
+    line-height: 1.7;
+  }
+
+  .vehicle-list {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .vehicle-visual {
+    min-height: 90px;
+  }
+
+  .vehicle-visual span {
+    font-size: 25px;
+  }
+
+  .vehicle-info {
+    padding: 10px;
+  }
+
+  .vehicle-info h3 {
+    font-size: 15px;
+  }
+
+  .vehicle-info p {
+    font-size: 10px;
+  }
+
+  .settings-panel {
+    padding: 12px 18px;
+  }
+
+  .setting-item {
+    padding: 9px 0;
+  }
+
+  footer {
+    min-height: 40px;
+    padding: 8px 4%;
+  }
+}
