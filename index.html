@@ -3,41 +3,228 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#101a35">
+  <meta name="theme-color" content="#080e20">
+  <meta name="description" content="星都電鉄の鉄道運転シミュレーター">
   <title>星都電鉄 - Stellar City Railway</title>
   <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
   <div id="game">
     <header class="site-header">
-      <div class="brand">
+      <button class="brand" id="home-button" aria-label="ホームへ戻る">
         <span class="brand-mark">✦</span>
-        <div>
-          <h1>星都電鉄</h1>
-          <p>STELLAR CITY RAILWAY</p>
-        </div>
-      </div>
-      <span class="version">DEVELOPMENT BUILD 0.1</span>
+        <span class="brand-text">
+          <strong>星都電鉄</strong>
+          <small>STELLAR CITY RAILWAY</small>
+        </span>
+      </button>
+      <span class="version">DEVELOPMENT BUILD 0.2</span>
     </header>
 
     <main id="main-content">
-      <section class="title-screen">
-        <p class="eyebrow">WELCOME TO STELLAR CITY</p>
-        <h2>星々をつなぐ、<br>鉄道の旅へ。</h2>
-        <p class="intro">
-          星都電鉄の運転士となり、<br>
-          さまざまな路線を走り抜けよう。
-        </p>
-        <div class="coming-soon">YOUR JOURNEY BEGINS HERE</div>
+      <!-- メインメニュー -->
+      <section class="screen active" id="home-screen">
+        <div class="hero">
+          <p class="eyebrow">WELCOME TO STELLAR CITY</p>
+          <h1>星都電鉄</h1>
+          <p class="english-title">STELLAR CITY RAILWAY</p>
+          <p class="intro">
+            星々をつなぐ、鉄道の旅へ。<br>
+            星都の街を駆け抜ける列車の運転士になろう。
+          </p>
+        </div>
+
+        <nav class="main-menu" aria-label="メインメニュー">
+          <button class="menu-button primary" data-screen="route-select-screen">
+            <span class="menu-icon">🚆</span>
+            <span class="menu-label">
+              <strong>運転を始める</strong>
+              <small>路線・列車を選択</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="menu-button" data-screen="map-screen">
+            <span class="menu-icon">🗺️</span>
+            <span class="menu-label">
+              <strong>路線図</strong>
+              <small>路線と駅を確認</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="menu-button" data-screen="vehicle-screen">
+            <span class="menu-icon">🚄</span>
+            <span class="menu-label">
+              <strong>車両図鑑</strong>
+              <small>星都電鉄の車両を紹介</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="menu-button" data-screen="settings-screen">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-label">
+              <strong>設定</strong>
+              <small>音量・運転画面など</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+        </nav>
+      </section>
+
+      <!-- 路線選択 -->
+      <section class="screen" id="route-select-screen">
+        <div class="page-heading">
+          <p class="eyebrow">START YOUR JOURNEY</p>
+          <h2>運転する路線を選択</h2>
+          <p>運転したい路線を選んでください。</p>
+        </div>
+
+        <div class="route-list">
+          <button class="route-card" data-route="天の川線">
+            <span class="route-color route-blue"></span>
+            <span><strong>天の川線</strong><small>星都駅 ～ 星都臨海空港駅</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+          <button class="route-card" data-route="星屑線">
+            <span class="route-color route-orange"></span>
+            <span><strong>星屑線</strong><small>宵待町駅 ～ 天満原駅</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+          <button class="route-card" data-route="銀河線">
+            <span class="route-color route-purple"></span>
+            <span><strong>銀河線</strong><small>星都駅 ～ 奥星都駅</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+          <button class="route-card" data-route="星都巡回線">
+            <span class="route-color route-green"></span>
+            <span><strong>星都巡回線</strong><small>星都駅を起点とする環状路線</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+        </div>
+
+        <div id="route-selection-result" class="selection-result" hidden>
+          <h3 id="selected-route-name"></h3>
+          <p>この路線の運転準備画面は、次の開発段階で実装します。</p>
+        </div>
+      </section>
+
+      <!-- 路線図 -->
+      <section class="screen" id="map-screen">
+        <div class="page-heading">
+          <p class="eyebrow">NETWORK GUIDE</p>
+          <h2>星都電鉄 路線図</h2>
+          <p>星都の街を結ぶ4つの路線。</p>
+        </div>
+
+        <div class="station-route-list">
+          <article class="line-card">
+            <h3><span class="route-color route-blue"></span>天の川線</h3>
+            <p>星都駅 → 星都南駅 → 織姫橋駅 → 銀漢町駅 → 光が丘駅 → 流星公園前駅 → 天満原駅 → 汐見台駅 → 暁海岸駅 → 星都臨海空港駅</p>
+          </article>
+
+          <article class="line-card">
+            <h3><span class="route-color route-orange"></span>星屑線</h3>
+            <p>宵待町駅 → かすみ野駅 → 星川駅 → 翠星の森駅 → 天満原駅</p>
+          </article>
+
+          <article class="line-card">
+            <h3><span class="route-color route-purple"></span>銀河線</h3>
+            <p>星都駅 → 西星都駅 → 月見台駅 → 星川駅 → 北斗口駅 → 白鳥ヶ丘駅 → 望星温泉駅 → 奥星都駅</p>
+          </article>
+
+          <article class="line-card">
+            <h3><span class="route-color route-green"></span>星都巡回線</h3>
+            <p>星都駅 → 新星都駅 → 銀漢町駅 → 宵待町駅 → 南星台駅 → 翠星の森駅 → 二十六夜駅 → 月見台駅 → 星都大学前駅 → 北星都駅 → 星都駅</p>
+            <small>時計回り・反時計回り／普通列車のみ</small>
+          </article>
+        </div>
+      </section>
+
+      <!-- 車両図鑑 -->
+      <section class="screen" id="vehicle-screen">
+        <div class="page-heading">
+          <p class="eyebrow">ROLLING STOCK</p>
+          <h2>車両図鑑</h2>
+          <p>星都電鉄で活躍する車両。</p>
+        </div>
+
+        <div class="vehicle-list">
+          <article class="vehicle-card">
+            <div class="vehicle-visual vehicle-1000">
+              <span>1000</span>
+              <small>SERIES</small>
+            </div>
+            <div class="vehicle-info">
+              <h3>1000系</h3>
+              <span class="service-tag">普通</span>
+              <p>正面は水色。白い車体に水色の上部ラインと、走行路線のカラーを使った下部ラインを配置。</p>
+            </div>
+          </article>
+
+          <article class="vehicle-card">
+            <div class="vehicle-visual vehicle-2000">
+              <span>2000</span>
+              <small>SERIES</small>
+            </div>
+            <div class="vehicle-info">
+              <h3>2000系</h3>
+              <span class="service-tag">急行</span>
+              <p>正面は赤色。白い車体に赤色の上部ラインと、走行路線のカラーを使った下部ラインを配置。</p>
+            </div>
+          </article>
+
+          <article class="vehicle-card">
+            <div class="vehicle-visual vehicle-7000">
+              <span>7000</span>
+              <small>SERIES</small>
+            </div>
+            <div class="vehicle-info">
+              <h3>7000系</h3>
+              <span class="service-tag">観光特急</span>
+              <p>正面は紫色。白い車体に紫色の上部ラインと、走行路線のカラーを使った下部ラインを配置。</p>
+            </div>
+          </article>
+        </div>
+        <p class="note">※車両のイラスト・詳細性能は今後追加します。</p>
+      </section>
+
+      <!-- 設定 -->
+      <section class="screen" id="settings-screen">
+        <div class="page-heading">
+          <p class="eyebrow">GAME SETTINGS</p>
+          <h2>設定</h2>
+          <p>ゲームの基本設定を変更できます。</p>
+        </div>
+
+        <div class="settings-panel">
+          <div class="setting-item">
+            <label for="volume-setting">音量</label>
+            <div class="setting-control">
+              <input type="range" id="volume-setting" min="0" max="100" value="70">
+              <output id="volume-value">70%</output>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label for="view-setting">運転画面</label>
+            <select id="view-setting">
+              <option value="cab">運転台視点</option>
+              <option value="forward">前方視点</option>
+            </select>
+          </div>
+
+          <p class="note">設定はこのブラウザに保存されます。</p>
+        </div>
       </section>
     </main>
 
     <footer>
-      <p>STELLAR CITY RAILWAY</p>
-      <p>© Stellar City Railway Project</p>
+      <span>STELLAR CITY RAILWAY</span>
+      <span>© Stellar City Railway Project</span>
     </footer>
   </div>
-
-  <script src="script.js"></script>
 </body>
 </html>
