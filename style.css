@@ -1,0 +1,238 @@
+/* ========================================
+   STAR CITY RAILWAY
+   Main stylesheet
+======================================== */
+
+:root {
+  --background: #080e20;
+  --background-light: #101b36;
+  --panel: rgba(20, 34, 65, 0.82);
+  --text: #f5f8ff;
+  --text-muted: #aab8d4;
+  --accent: #83dfff;
+  --border: rgba(164, 203, 255, 0.2);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  min-height: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 38%, #1b3158 0%, transparent 55%),
+    linear-gradient(145deg, #080e20, #101a35 55%, #080d1d);
+  color: var(--text);
+  font-family:
+    "Yu Gothic",
+    "Hiragino Kaku Gothic ProN",
+    Meiryo,
+    sans-serif;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, white 50%, transparent),
+    radial-gradient(1px 1px at 25% 75%, white 50%, transparent),
+    radial-gradient(2px 2px at 42% 12%, white 50%, transparent),
+    radial-gradient(1px 1px at 60% 35%, white 50%, transparent),
+    radial-gradient(2px 2px at 78% 18%, white 50%, transparent),
+    radial-gradient(1px 1px at 90% 68%, white 50%, transparent),
+    radial-gradient(2px 2px at 15% 90%, white 50%, transparent),
+    radial-gradient(1px 1px at 70% 88%, white 50%, transparent);
+  background-size: 310px 260px;
+  z-index: 0;
+}
+
+#game {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+
+.site-header {
+  width: 100%;
+  min-height: 88px;
+  padding: 18px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: rgba(5, 12, 28, 0.45);
+  backdrop-filter: blur(10px);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.brand-mark {
+  color: var(--accent);
+  font-size: 38px;
+  text-shadow: 0 0 18px rgba(131, 223, 255, 0.65);
+}
+
+.brand h1 {
+  font-size: 23px;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.brand p {
+  margin-top: 3px;
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+}
+
+.version {
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+}
+
+/* Main title screen */
+
+#main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 55px 20px;
+}
+
+.title-screen {
+  width: min(100%, 900px);
+  min-height: 460px;
+  padding: 65px 45px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(24, 43, 79, 0.72),
+      rgba(10, 19, 41, 0.72)
+    );
+  box-shadow:
+    0 20px 70px rgba(0, 0, 0, 0.28),
+    inset 0 0 45px rgba(120, 180, 255, 0.04);
+  backdrop-filter: blur(12px);
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  letter-spacing: 0.32em;
+  margin-bottom: 25px;
+}
+
+.title-screen h2 {
+  font-size: clamp(34px, 6vw, 58px);
+  line-height: 1.55;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  text-shadow: 0 0 30px rgba(131, 223, 255, 0.18);
+}
+
+.intro {
+  margin-top: 27px;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 2.1;
+  letter-spacing: 0.08em;
+}
+
+.coming-soon {
+  margin-top: 45px;
+  padding: 13px 30px;
+  border: 1px solid rgba(131, 223, 255, 0.45);
+  border-radius: 30px;
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  background: rgba(131, 223, 255, 0.06);
+}
+
+/* Footer */
+
+footer {
+  min-height: 65px;
+  padding: 15px 5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+/* Responsive layout */
+
+@media (max-width: 600px) {
+  .site-header {
+    min-height: 75px;
+    padding: 14px 5%;
+  }
+
+  .brand-mark {
+    font-size: 30px;
+  }
+
+  .brand h1 {
+    font-size: 19px;
+  }
+
+  .version {
+    font-size: 8px;
+    text-align: right;
+  }
+
+  #main-content {
+    padding: 30px 15px;
+  }
+
+  .title-screen {
+    min-height: 400px;
+    padding: 45px 18px;
+  }
+
+  .title-screen h2 {
+    font-size: clamp(30px, 8vw, 42px);
+  }
+
+  .intro {
+    font-size: 13px;
+  }
+
+  footer {
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+  }
+}
