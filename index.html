@@ -10,10 +10,7 @@
   <script src="script.js" defer></script>
 
   <style>
-    /* 横画面への案内 */
-    #orientation-overlay {
-      display: none;
-    }
+    #orientation-overlay { display: none; }
 
     @media (orientation: portrait) {
       #orientation-overlay {
@@ -36,9 +33,7 @@
         margin-bottom: 20px;
       }
 
-      #orientation-overlay strong {
-        font-size: 19px;
-      }
+      #orientation-overlay strong { font-size: 19px; }
 
       #orientation-overlay p {
         margin-top: 12px;
@@ -81,9 +76,7 @@
       border-radius: 9px;
     }
 
-    .driving-topbar strong {
-      font-size: 14px;
-    }
+    .driving-topbar strong { font-size: 14px; }
 
     .driving-topbar span {
       color: #aab8d4;
@@ -160,8 +153,7 @@
       clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
     }
 
-    .rail-left,
-    .rail-right {
+    .rail-left, .rail-right {
       position: absolute;
       bottom: 0;
       width: 5px;
@@ -278,54 +270,133 @@
       font-size: 12px;
     }
 
+    /* 縦型マスコン */
     .master-controller {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
-      padding: 10px 5px;
+      gap: 9px;
+      padding: 12px 5px;
       border: 1px solid rgba(164, 203, 255, 0.2);
       border-radius: 10px;
       background: linear-gradient(160deg, #1b2d4b, #0d172b);
+      user-select: none;
     }
 
     .master-controller h3 {
-      font-size: 11px;
-      margin-bottom: 4px;
+      font-size: 12px;
+      color: #f5f8ff;
     }
 
-    .notch-button {
+    .controller-readout {
       width: 100%;
-      min-height: 25px;
+      padding: 7px 3px;
       border: 1px solid #526987;
-      border-radius: 5px;
-      background: #263b59;
-      color: #dce8f8;
-      font-size: 11px;
-      cursor: pointer;
-    }
-
-    .notch-button.active {
-      background: #83dfff;
-      color: #07101e;
-      border-color: white;
-      font-weight: bold;
-    }
-
-    .notch-button.brake {
-      background: #603b48;
-    }
-
-    .notch-button.brake.active {
-      background: #ff9c9c;
-      color: #250b0b;
-    }
-
-    .controller-current {
-      margin-top: 5px;
+      border-radius: 6px;
+      background: #07101e;
       color: #83dfff;
-      font-size: 11px;
+      font-size: 17px;
       font-weight: bold;
+      text-align: center;
+    }
+
+    .controller-track {
+      position: relative;
+      width: 100%;
+      height: 324px;
+      max-height: calc(100vh - 150px);
+      min-height: 210px;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .controller-track:active {
+      cursor: grabbing;
+    }
+
+    .controller-track-inner {
+      position: absolute;
+      inset: 12px 0;
+    }
+
+    .controller-rail {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 55px;
+      width: 7px;
+      transform: translateX(-50%);
+      border-radius: 5px;
+      background: linear-gradient(90deg, #101a2a, #71839a, #101a2a);
+      box-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+    .controller-labels {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .notch-label {
+      width: 34px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      color: #c6d2e4;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .notch-label.selected {
+      color: #83dfff;
+      background: rgba(131, 223, 255, 0.13);
+    }
+
+    .notch-label.brake-label {
+      color: #ffb0b0;
+    }
+
+    .notch-label.brake-label.selected {
+      color: #ffb0b0;
+      background: rgba(255, 156, 156, 0.15);
+    }
+
+    .controller-thumb {
+      position: absolute;
+      top: 58.333%;
+      left: 55px;
+      width: 30px;
+      height: 23px;
+      transform: translate(-50%, -50%);
+      border: 2px solid #dce8f8;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #9ceaff, #3986ad);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+      pointer-events: none;
+    }
+
+    .controller-thumb::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 4px;
+      transform: translate(-50%, -50%);
+      border-radius: 3px;
+      background: #17324b;
+    }
+
+    .controller-current-caption {
+      color: #aab8d4;
+      font-size: 9px;
+      text-align: center;
     }
 
     .driving-message {
@@ -339,13 +410,9 @@
     }
 
     @media (max-height: 520px) {
-      .site-header {
-        display: none;
-      }
+      .site-header { display: none; }
 
-      #game {
-        min-height: 100dvh;
-      }
+      #game { min-height: 100dvh; }
 
       #main-content:has(#driving-screen.active) {
         min-height: 100dvh;
@@ -358,30 +425,23 @@
         gap: 8px;
       }
 
-      .forward-window {
-        min-height: 120px;
+      .forward-window { min-height: 120px; }
+
+      .instrument-panel { padding: 8px; }
+
+      .speed-display strong { font-size: 30px; }
+
+      .controller-track {
+        height: 270px;
+        min-height: 190px;
       }
 
-      .instrument-panel {
-        padding: 8px;
-      }
+      .controller-rail,
+      .controller-thumb { left: 49px; }
 
-      .speed-display strong {
-        font-size: 30px;
-      }
+      .driving-message { padding: 5px; }
 
-      .notch-button {
-        min-height: 21px;
-        font-size: 10px;
-      }
-
-      .driving-message {
-        padding: 5px;
-      }
-
-      footer {
-        display: none;
-      }
+      footer { display: none; }
     }
 
     @media (max-width: 700px) and (orientation: landscape) {
@@ -390,18 +450,14 @@
         gap: 6px;
       }
 
-      .instrument-panel {
-        padding: 8px 5px;
-      }
+      .instrument-panel { padding: 8px 5px; }
 
-      .speed-display strong {
-        font-size: 29px;
-      }
+      .speed-display strong { font-size: 29px; }
 
-      .notch-button {
-        min-height: 20px;
-        font-size: 9px;
-      }
+      .controller-track { height: 260px; }
+
+      .controller-rail,
+      .controller-thumb { left: 45px; }
     }
   </style>
 </head>
@@ -427,7 +483,6 @@
 
     <main id="main-content">
 
-      <!-- メインメニュー -->
       <section class="screen active" id="home-screen">
         <div class="hero">
           <p class="eyebrow">WELCOME TO STELLAR CITY</p>
@@ -478,7 +533,6 @@
         </nav>
       </section>
 
-      <!-- 路線選択 -->
       <section class="screen" id="route-select-screen">
         <div class="page-heading">
           <p class="eyebrow">START YOUR JOURNEY</p>
@@ -521,7 +575,6 @@
         </div>
       </section>
 
-      <!-- 路線図 -->
       <section class="screen" id="map-screen">
         <div class="page-heading">
           <p class="eyebrow">NETWORK GUIDE</p>
@@ -553,7 +606,6 @@
         </div>
       </section>
 
-      <!-- 車両図鑑 -->
       <section class="screen" id="vehicle-screen">
         <div class="page-heading">
           <p class="eyebrow">ROLLING STOCK</p>
@@ -599,7 +651,6 @@
         <p class="note">※車両のイラスト・詳細性能は今後追加します。</p>
       </section>
 
-      <!-- 設定 -->
       <section class="screen" id="settings-screen">
         <div class="page-heading">
           <p class="eyebrow">GAME SETTINGS</p>
@@ -630,7 +681,6 @@
 
       <!-- 運転画面 -->
       <section class="screen" id="driving-screen">
-
         <div class="driving-main">
           <div class="driving-topbar">
             <div>
@@ -690,30 +740,55 @@
           </div>
         </div>
 
+        <!-- スライド式マスコン -->
         <div class="master-controller">
           <h3>マスコン</h3>
 
-          <button class="notch-button" data-notch="P7">P7</button>
-          <button class="notch-button" data-notch="P6">P6</button>
-          <button class="notch-button" data-notch="P5">P5</button>
-          <button class="notch-button" data-notch="P4">P4</button>
-          <button class="notch-button" data-notch="P3">P3</button>
-          <button class="notch-button" data-notch="P2">P2</button>
-          <button class="notch-button" data-notch="P1">P1</button>
-          <button class="notch-button active" data-notch="N">N</button>
-          <button class="notch-button brake" data-notch="B1">B1</button>
-          <button class="notch-button brake" data-notch="B2">B2</button>
-          <button class="notch-button brake" data-notch="B3">B3</button>
-          <button class="notch-button brake" data-notch="B4">B4</button>
-          <button class="notch-button brake" data-notch="B5">B5</button>
+          <div class="controller-readout" id="controller-readout">N</div>
 
-          <div class="controller-current" id="controller-current">N</div>
+          <div
+            class="controller-track"
+            id="controller-track"
+            role="slider"
+            tabindex="0"
+            aria-label="マスコン"
+            aria-orientation="vertical"
+            aria-valuemin="0"
+            aria-valuemax="12"
+            aria-valuenow="7"
+            aria-valuetext="N"
+          >
+            <div class="controller-track-inner" id="controller-track-inner">
+              <div class="controller-rail"></div>
+
+              <div class="controller-labels" id="controller-labels">
+                <span class="notch-label" data-index="0">P7</span>
+                <span class="notch-label" data-index="1">P6</span>
+                <span class="notch-label" data-index="2">P5</span>
+                <span class="notch-label" data-index="3">P4</span>
+                <span class="notch-label" data-index="4">P3</span>
+                <span class="notch-label" data-index="5">P2</span>
+                <span class="notch-label" data-index="6">P1</span>
+                <span class="notch-label" data-index="7">N</span>
+                <span class="notch-label brake-label" data-index="8">B1</span>
+                <span class="notch-label brake-label" data-index="9">B2</span>
+                <span class="notch-label brake-label" data-index="10">B3</span>
+                <span class="notch-label brake-label" data-index="11">B4</span>
+                <span class="notch-label brake-label" data-index="12">B5</span>
+              </div>
+
+              <div class="controller-thumb" id="controller-thumb"></div>
+            </div>
+          </div>
+
+          <div class="controller-current-caption">
+            上：力行 ／ 下：ブレーキ
+          </div>
         </div>
 
         <div class="driving-message" id="driving-message">
-          運転画面の基本部分です。列車の走行機能は次の段階で実装します。
+          レバーをスライドしてマスコンを操作できます。列車の走行機能は今後実装します。
         </div>
-
       </section>
     </main>
 
