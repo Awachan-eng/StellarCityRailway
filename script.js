@@ -63,9 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const startDrivingButton = document.getElementById("start-driving-button");
 
   startDrivingButton.addEventListener("click", () => {
-    if (!selectedRoute) {
-      return;
-    }
+    if (!selectedRoute) return;
 
     drivingRouteName.textContent = selectedRoute;
     showScreen("driving-screen");
@@ -76,28 +74,130 @@ document.addEventListener("DOMContentLoaded", () => {
     showScreen("route-select-screen");
   });
 
-  // マスコン操作
-  const notchButtons = document.querySelectorAll("[data-notch]");
-  const controllerCurrent = document.getElementById("controller-current");
+  // ========================================
+  // スライド式マスコン
+  // ========================================
+
+  const notches = [
+    "P7", "P6", "P5", "P4", "P3", "P2", "P1",
+    "N",
+    "B1", "B2", "B3", "B4", "B5"
+  ];
+
+  const controllerTrack = document.getElementById("controller-track");
+  const controllerInner = document.getElementById("controller-track-inner");
+  const controllerThumb = document.getElementById("controller-thumb");
+  const controllerReadout = document.getElementById("controller-readout");
+  const controllerLabels = document.querySelectorAll(".notch-label");
   const drivingMessage = document.getElementById("driving-message");
 
-  notchButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const notch = button.dataset.notch;
+  // 0 = P7、7 = N、12 = B5
+  let currentNotchIndex = 7;
+  let isDragging = false;
 
-      notchButtons.forEach((item) => {
-        item.classList.remove("active");
-      });
+  function updateController(index) {
+    // 0～12の範囲に収める
+    currentNotchIndex = Math.max(0, Math.min(12, index));
 
-      button.classList.add("active");
-      controllerCurrent.textContent = notch;
+    const notchName = notches[currentNotchIndex];
+    const percentage = (currentNotchIndex / 12) * 100;
 
-      drivingMessage.textContent =
-        "マスコン：" + notch + "　／　走行機能は今後実装します。";
+    // レバーの位置を変更
+    controllerThumb.style.top = `${percentage}%`;
+
+    // 現在のノッチを表示
+    controllerReadout.textContent = notchName;
+
+    // 操作位置の表示を更新
+    controllerLabels.forEach((label) => {
+      const labelIndex = Number(label.dataset.index);
+      label.classList.toggle(
+        "selected",
+        labelIndex === currentNotchIndex
+      );
     });
+
+    // アクセシビリティ情報を更新
+    controllerTrack.setAttribute("aria-valuenow", currentNotchIndex);
+    controllerTrack.setAttribute("aria-valuetext", notchName);
+
+    drivingMessage.textContent =
+      `マスコン：${notchName}　／　レバーをスライドして操作できます。`;
+  }
+
+  // 指やマウスの位置からノッチを計算
+  function setNotchFromPointer(event) {
+    const rect = controllerInner.getBoundingClientRect();
+
+    // レバーが移動できる範囲
+    const usableHeight = rect.height;
+
+    let ratio = (event.clientY - rect.top) / usableHeight;
+
+    // 上端より上・下端より下には行かない
+    ratio = Math.max(0, Math.min(1, ratio));
+
+    // 最も近いノッチに自動的に合わせる
+    const index = Math.round(ratio * 12);
+
+    updateController(index);
+  }
+
+  // スライド開始
+  controllerTrack.addEventListener("pointerdown", (event) => {
+    isDragging = true;
+
+    controllerTrack.setPointerCapture(event.pointerId);
+
+    setNotchFromPointer(event);
   });
 
+  // スライド中
+  controllerTrack.addEventListener("pointermove", (event) => {
+    if (!isDragging) return;
+
+    setNotchFromPointer(event);
+  });
+
+  // スライド終了
+  controllerTrack.addEventListener("pointerup", () => {
+    isDragging = false;
+  });
+
+  controllerTrack.addEventListener("pointercancel", () => {
+    isDragging = false;
+  });
+
+  // キーボード操作にも対応
+  controllerTrack.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      updateController(currentNotchIndex - 1);
+    }
+
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      updateController(currentNotchIndex + 1);
+    }
+
+    if (event.key === "Home") {
+      event.preventDefault();
+      updateController(0);
+    }
+
+    if (event.key === "End") {
+      event.preventDefault();
+      updateController(12);
+    }
+  });
+
+  // 初期位置はN
+  updateController(7);
+
+  // ========================================
   // 音量設定
+  // ========================================
+
   const volumeSetting = document.getElementById("volume-setting");
   const volumeValue = document.getElementById("volume-value");
 
@@ -119,7 +219,10 @@ document.addEventListener("DOMContentLoaded", () => {
   volumeSetting.addEventListener("input", updateVolume);
   updateVolume();
 
+  // ========================================
   // 運転画面の表示設定
+  // ========================================
+
   const viewSetting = document.getElementById("view-setting");
   const savedView = localStorage.getItem("stellarDrivingView");
 
@@ -135,5 +238,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   console.log("STELLAR CITY RAILWAY");
-  console.log("運転画面の初期化が完了しました。");
+  console.log("スライド式マスコンの初期化が完了しました。");
 });
