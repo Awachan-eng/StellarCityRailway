@@ -7,6 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const screens = document.querySelectorAll(".screen");
   const homeButton = document.getElementById("home-button");
 
+  let selectedRoute = "";
+
   // 画面切り替え
   function showScreen(screenId) {
     screens.forEach((screen) => {
@@ -19,14 +21,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // メインメニューのボタン
+  // メインメニュー
   document.querySelectorAll("[data-screen]").forEach((button) => {
     button.addEventListener("click", () => {
       showScreen(button.dataset.screen);
     });
   });
 
-  // ヘッダーのロゴからホームへ戻る
+  // ホームへ戻る
   homeButton.addEventListener("click", () => {
     showScreen("home-screen");
   });
@@ -35,12 +37,13 @@ document.addEventListener("DOMContentLoaded", () => {
   const routeCards = document.querySelectorAll("[data-route]");
   const resultArea = document.getElementById("route-selection-result");
   const selectedRouteName = document.getElementById("selected-route-name");
+  const drivingRouteName = document.getElementById("driving-route-name");
 
   routeCards.forEach((card) => {
     card.addEventListener("click", () => {
-      const routeName = card.dataset.route;
+      selectedRoute = card.dataset.route;
 
-      selectedRouteName.textContent = routeName;
+      selectedRouteName.textContent = selectedRoute + "を選択中";
       resultArea.hidden = false;
 
       routeCards.forEach((item) => {
@@ -53,6 +56,44 @@ document.addEventListener("DOMContentLoaded", () => {
         behavior: "smooth",
         block: "nearest"
       });
+    });
+  });
+
+  // 運転開始
+  const startDrivingButton = document.getElementById("start-driving-button");
+
+  startDrivingButton.addEventListener("click", () => {
+    if (!selectedRoute) {
+      return;
+    }
+
+    drivingRouteName.textContent = selectedRoute;
+    showScreen("driving-screen");
+  });
+
+  // 運転終了
+  document.getElementById("exit-driving-button").addEventListener("click", () => {
+    showScreen("route-select-screen");
+  });
+
+  // マスコン操作
+  const notchButtons = document.querySelectorAll("[data-notch]");
+  const controllerCurrent = document.getElementById("controller-current");
+  const drivingMessage = document.getElementById("driving-message");
+
+  notchButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const notch = button.dataset.notch;
+
+      notchButtons.forEach((item) => {
+        item.classList.remove("active");
+      });
+
+      button.classList.add("active");
+      controllerCurrent.textContent = notch;
+
+      drivingMessage.textContent =
+        "マスコン：" + notch + "　／　走行機能は今後実装します。";
     });
   });
 
@@ -94,5 +135,5 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   console.log("STELLAR CITY RAILWAY");
-  console.log("メニューの初期化が完了しました。");
+  console.log("運転画面の初期化が完了しました。");
 });
