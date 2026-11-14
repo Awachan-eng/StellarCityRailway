@@ -45,52 +45,52 @@ document.addEventListener("DOMContentLoaded", () => {
   // 路線・駅間距離データ
   // ========================================
 
-  // distance は、その駅から次駅までの距離（km）
+  // distance は、その駅から次駅までの距離（m）
   // 星都巡回線は時計回り
   const routeData = {
     "天の川線": [
-      { name: "星都駅", distance: 1.8 },
-      { name: "星都南駅", distance: 2.0 },
-      { name: "織姫橋駅", distance: 2.2 },
-      { name: "銀漢町駅", distance: 2.4 },
-      { name: "光が丘駅", distance: 2.0 },
-      { name: "流星公園前駅", distance: 3.0 },
-      { name: "天満原駅", distance: 2.5 },
-      { name: "汐見台駅", distance: 2.0 },
-      { name: "暁海岸駅", distance: 3.2 },
+      { name: "星都駅", distance: 947 },
+      { name: "星都南駅", distance: 1018 },
+      { name: "織姫橋駅", distance: 1183 },
+      { name: "銀漢町駅", distance: 1206 },
+      { name: "光が丘駅", distance: 1062 },
+      { name: "流星公園前駅", distance: 1591 },
+      { name: "天満原駅", distance: 1284 },
+      { name: "汐見台駅", distance: 1075 },
+      { name: "暁海岸駅", distance: 1612 },
       { name: "星都臨海空港駅", distance: null }
     ],
 
     "星屑線": [
-      { name: "宵待町駅", distance: 1.8 },
-      { name: "かすみ野駅", distance: 2.4 },
-      { name: "星川駅", distance: 2.7 },
-      { name: "翠星の森駅", distance: 2.6 },
+      { name: "宵待町駅", distance: 1458 },
+      { name: "かすみ野駅", distance: 1203 },
+      { name: "星川駅", distance: 1439 },
+      { name: "翠星の森駅", distance: 1324 },
       { name: "天満原駅", distance: null }
     ],
 
     "銀河線": [
-      { name: "星都駅", distance: 1.6 },
-      { name: "西星都駅", distance: 2.1 },
-      { name: "月見台駅", distance: 2.0 },
-      { name: "星川駅", distance: 2.3 },
-      { name: "北斗口駅", distance: 2.8 },
-      { name: "白鳥ヶ丘駅", distance: 3.4 },
-      { name: "望星温泉駅", distance: 3.0 },
+      { name: "星都駅", distance: 1871 },
+      { name: "西星都駅", distance: 1059 },
+      { name: "月見台駅", distance: 1042 },
+      { name: "星川駅", distance: 1246 },
+      { name: "北斗口駅", distance: 1428 },
+      { name: "白鳥ヶ丘駅", distance: 1764 },
+      { name: "望星温泉駅", distance: 1515 },
       { name: "奥星都駅", distance: null }
     ],
 
     "星都巡回線": [
-      { name: "星都駅", distance: 1.5 },
-      { name: "新星都駅", distance: 1.8 },
-      { name: "銀漢町駅", distance: 2.0 },
-      { name: "宵待町駅", distance: 1.7 },
-      { name: "南星台駅", distance: 1.9 },
-      { name: "翠星の森駅", distance: 1.6 },
-      { name: "二十六夜駅", distance: 2.0 },
-      { name: "月見台駅", distance: 1.8 },
-      { name: "星都大学前駅", distance: 1.7 },
-      { name: "北星都駅", distance: 1.5 }
+      { name: "星都駅", distance: 787 },
+      { name: "新星都駅", distance: 980 },
+      { name: "銀漢町駅", distance: 1014 },
+      { name: "宵待町駅", distance: 916 },
+      { name: "南星台駅", distance: 952 },
+      { name: "翠星の森駅", distance: 893 },
+      { name: "二十六夜駅", distance: 1051 },
+      { name: "月見台駅", distance: 929 },
+      { name: "星都大学前駅", distance: 927 },
+      { name: "北星都駅", distance: 795 }
     ]
   };
 
