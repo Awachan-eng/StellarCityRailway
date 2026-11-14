@@ -1,3 +1,4 @@
+
 /* ========================================
    STELLAR CITY RAILWAY
    Train Driving System
@@ -13,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const homeButton = document.getElementById("home-button");
 
   let selectedRoute = "";
+  let selectedVehicle = null;
 
   function showScreen(screenId) {
     screens.forEach((screen) => {
@@ -41,6 +43,150 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ========================================
+  // 車両データ
+  // ========================================
+
+  const vehicleData = {
+    "1000": {
+      name: "1000系",
+      service: "普通",
+      maxSpeed: 80,
+      color: "#55b9df",
+      description: "標準的な性能を持つ普通列車"
+    },
+
+    "2000": {
+      name: "2000系",
+      service: "急行",
+      maxSpeed: 100,
+      color: "#e56b62",
+      description: "高速運転に対応した急行列車"
+    },
+
+    "7000": {
+      name: "7000系",
+      service: "観光特急",
+      maxSpeed: 120,
+      color: "#a987df",
+      description: "高い最高速度を持つ観光特急列車"
+    }
+  };
+
+
+  // ========================================
+  // 車両選択画面のスタイル
+  // ========================================
+
+  const vehicleStyle = document.createElement("style");
+
+  vehicleStyle.textContent = `
+    .vehicle-select-area {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(164, 203, 255, 0.2);
+    }
+
+    .vehicle-select-heading {
+      margin-bottom: 12px;
+      color: #f5f8ff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+    .vehicle-select-list {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .vehicle-select-card {
+      min-width: 0;
+      padding: 12px 8px;
+      border: 2px solid rgba(164, 203, 255, 0.2);
+      border-radius: 9px;
+      background: rgba(20, 34, 65, 0.9);
+      color: #f5f8ff;
+      text-align: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .vehicle-select-card:hover {
+      background: rgba(45, 67, 105, 0.95);
+    }
+
+    .vehicle-select-card.selected {
+      border-color: #83dfff;
+      background: rgba(55, 105, 145, 0.35);
+      box-shadow: 0 0 10px rgba(131, 223, 255, 0.18);
+    }
+
+    .vehicle-select-card strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 16px;
+    }
+
+    .vehicle-select-card small {
+      display: block;
+      color: #aab8d4;
+      font-size: 10px;
+    }
+
+    .vehicle-select-speed {
+      display: block;
+      margin-top: 9px;
+      color: #83dfff;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .vehicle-select-detail {
+      margin-top: 12px;
+      padding: 10px;
+      border-radius: 7px;
+      background: rgba(5, 12, 28, 0.55);
+      color: #aab8d4;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .vehicle-select-detail strong {
+      color: #83dfff;
+    }
+
+    #start-driving-button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 700px) {
+      .vehicle-select-list {
+        gap: 5px;
+      }
+
+      .vehicle-select-card {
+        padding: 10px 4px;
+      }
+
+      .vehicle-select-card strong {
+        font-size: 13px;
+      }
+
+      .vehicle-select-card small {
+        font-size: 9px;
+      }
+
+      .vehicle-select-speed {
+        font-size: 14px;
+      }
+    }
+  `;
+
+  document.head.appendChild(vehicleStyle);
+
+
+  // ========================================
   // 路線選択
   // ========================================
 
@@ -49,12 +195,109 @@ document.addEventListener("DOMContentLoaded", () => {
   const selectedRouteName = document.getElementById("selected-route-name");
   const drivingRouteName = document.getElementById("driving-route-name");
 
-  routeCards.forEach((card) => {
+  const startDrivingButton =
+    document.getElementById("start-driving-button");
+
+  // 車両選択欄を作成
+  const vehicleSelectionArea = document.createElement("div");
+
+  vehicleSelectionArea.className = "vehicle-select-area";
+
+  vehicleSelectionArea.innerHTML = `
+    <div class="vehicle-select-heading">
+      運転する車両を選択
+    </div>
+
+    <div class="vehicle-select-list">
+
+      <button class="vehicle-select-card" data-vehicle="1000">
+        <strong>1000系</strong>
+        <small>普通</small>
+        <span class="vehicle-select-speed">80 km/h</span>
+      </button>
+
+      <button class="vehicle-select-card" data-vehicle="2000">
+        <strong>2000系</strong>
+        <small>急行</small>
+        <span class="vehicle-select-speed">100 km/h</span>
+      </button>
+
+      <button class="vehicle-select-card" data-vehicle="7000">
+        <strong>7000系</strong>
+        <small>観光特急</small>
+        <span class="vehicle-select-speed">120 km/h</span>
+      </button>
+
+    </div>
+
+    <div class="vehicle-select-detail" id="vehicle-select-detail">
+      車両を選択してください。
+    </div>
+  `;
+
+  resultArea.insertBefore(
+    vehicleSelectionArea,
+    startDrivingButton
+  );
+
+  startDrivingButton.disabled = true;
+
+  const vehicleSelectCards =
+    vehicleSelectionArea.querySelectorAll("[data-vehicle]");
+
+  const vehicleSelectDetail =
+    document.getElementById("vehicle-select-detail");
+
+
+  // 車両選択処理
+  vehicleSelectCards.forEach((card) => {
+
     card.addEventListener("click", () => {
+
+      const vehicleId = card.dataset.vehicle;
+
+      selectedVehicle = vehicleData[vehicleId];
+
+      vehicleSelectCards.forEach((item) => {
+        item.classList.remove("selected");
+      });
+
+      card.classList.add("selected");
+
+      vehicleSelectDetail.innerHTML =
+        `<strong>${selectedVehicle.name}</strong> を選択中<br>` +
+        `${selectedVehicle.description}<br>` +
+        `最高速度：<strong>${selectedVehicle.maxSpeed} km/h</strong>`;
+
+      startDrivingButton.disabled = false;
+    });
+
+  });
+
+
+  // 路線選択処理
+  routeCards.forEach((card) => {
+
+    card.addEventListener("click", () => {
+
       selectedRoute = card.dataset.route;
 
-      selectedRouteName.textContent = selectedRoute + "を選択中";
+      // 路線を変更したら車両選択をリセット
+      selectedVehicle = null;
+
+      selectedRouteName.textContent =
+        selectedRoute + "を選択中";
+
       resultArea.hidden = false;
+
+      startDrivingButton.disabled = true;
+
+      vehicleSelectCards.forEach((item) => {
+        item.classList.remove("selected");
+      });
+
+      vehicleSelectDetail.textContent =
+        "車両を選択してください。";
 
       routeCards.forEach((item) => {
         item.classList.remove("selected");
@@ -66,7 +309,9 @@ document.addEventListener("DOMContentLoaded", () => {
         behavior: "smooth",
         block: "nearest"
       });
+
     });
+
   });
 
 
@@ -75,19 +320,45 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   const speedValue = document.getElementById("speed-value");
-  const controllerTrack = document.getElementById("controller-track");
-  const controllerInner = document.getElementById("controller-track-inner");
-  const controllerThumb = document.getElementById("controller-thumb");
-  const controllerReadout = document.getElementById("controller-readout");
-  const controllerLabels = document.querySelectorAll(".notch-label");
-  const drivingMessage = document.getElementById("driving-message");
 
-  const instrumentInfo = document.querySelectorAll(
-    ".instrument-info div strong"
-  );
+  const controllerTrack =
+    document.getElementById("controller-track");
 
-  const buildings = document.querySelector(".distant-buildings");
-  const cloud = document.querySelector(".sky-cloud");
+  const controllerInner =
+    document.getElementById("controller-track-inner");
+
+  const controllerThumb =
+    document.getElementById("controller-thumb");
+
+  const controllerReadout =
+    document.getElementById("controller-readout");
+
+  const controllerLabels =
+    document.querySelectorAll(".notch-label");
+
+  const drivingMessage =
+    document.getElementById("driving-message");
+
+  const instrumentInfo =
+    document.querySelectorAll(
+      ".instrument-info div strong"
+    );
+
+  const buildings =
+    document.querySelector(".distant-buildings");
+
+  const cloud =
+    document.querySelector(".sky-cloud");
+
+  const drivingStatusSpeed =
+    document.querySelector(
+      "#driving-screen .driving-status .status-box:nth-child(3) strong"
+    );
+
+  const drivingStatusLabel =
+    document.querySelector(
+      "#driving-screen .driving-status .status-box:nth-child(3) small"
+    );
 
 
   // ========================================
@@ -100,11 +371,9 @@ document.addEventListener("DOMContentLoaded", () => {
     "B1", "B2", "B3", "B4", "B5"
   ];
 
-  // 0 = P7、7 = N、12 = B5
   let currentNotchIndex = 7;
   let isDragging = false;
 
-  // 力行の出力割合
   const powerRatios = {
     P1: 0.15,
     P2: 0.25,
@@ -115,7 +384,6 @@ document.addEventListener("DOMContentLoaded", () => {
     P7: 1.00
   };
 
-  // ブレーキの出力割合
   const brakeRatios = {
     B1: 0.20,
     B2: 0.35,
@@ -132,12 +400,13 @@ document.addEventListener("DOMContentLoaded", () => {
   let speed = 0;
   let distance = 0;
 
-  // 暫定の走行性能
-  const maxSpeed = 80;
+  // 車両選択に応じて変更する最高速度
+  let maxSpeed = 80;
 
-  // ★ 最大加速度を0.90から1.30に変更
+  // 最大加速度
   const maxAcceleration = 1.30;
 
+  // 最大ブレーキ力
   const maxBraking = 1.00;
 
   // 惰行時の自然減速
@@ -161,25 +430,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const notchName = notches[currentNotchIndex];
 
-    const percentage = (currentNotchIndex / 12) * 100;
+    const percentage =
+      (currentNotchIndex / 12) * 100;
 
-    // レバー位置
-    controllerThumb.style.top = `${percentage}%`;
+    controllerThumb.style.top =
+      `${percentage}%`;
 
-    // 現在のノッチ表示
-    controllerReadout.textContent = notchName;
+    controllerReadout.textContent =
+      notchName;
 
-    // 目盛りの強調
     controllerLabels.forEach((label) => {
-      const labelIndex = Number(label.dataset.index);
+
+      const labelIndex =
+        Number(label.dataset.index);
 
       label.classList.toggle(
         "selected",
         labelIndex === currentNotchIndex
       );
+
     });
 
-    // スライダー情報
     controllerTrack.setAttribute(
       "aria-valuenow",
       currentNotchIndex
@@ -200,9 +471,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setNotchFromPointer(event) {
 
-    const rect = controllerInner.getBoundingClientRect();
+    const rect =
+      controllerInner.getBoundingClientRect();
 
-    let ratio = (event.clientY - rect.top) / rect.height;
+    let ratio =
+      (event.clientY - rect.top) / rect.height;
 
     ratio = Math.max(0, Math.min(1, ratio));
 
@@ -211,56 +484,70 @@ document.addEventListener("DOMContentLoaded", () => {
     updateController(index);
   }
 
-  // スライド開始
-  controllerTrack.addEventListener("pointerdown", (event) => {
+  controllerTrack.addEventListener(
+    "pointerdown",
+    (event) => {
 
-    isDragging = true;
+      isDragging = true;
 
-    controllerTrack.setPointerCapture(event.pointerId);
+      controllerTrack.setPointerCapture(
+        event.pointerId
+      );
 
-    setNotchFromPointer(event);
-  });
-
-  // スライド中
-  controllerTrack.addEventListener("pointermove", (event) => {
-
-    if (!isDragging) return;
-
-    setNotchFromPointer(event);
-  });
-
-  // スライド終了
-  controllerTrack.addEventListener("pointerup", () => {
-    isDragging = false;
-  });
-
-  controllerTrack.addEventListener("pointercancel", () => {
-    isDragging = false;
-  });
-
-  // キーボード操作
-  controllerTrack.addEventListener("keydown", (event) => {
-
-    if (event.key === "ArrowUp") {
-      event.preventDefault();
-      updateController(currentNotchIndex - 1);
+      setNotchFromPointer(event);
     }
+  );
 
-    if (event.key === "ArrowDown") {
-      event.preventDefault();
-      updateController(currentNotchIndex + 1);
-    }
+  controllerTrack.addEventListener(
+    "pointermove",
+    (event) => {
 
-    if (event.key === "Home") {
-      event.preventDefault();
-      updateController(0);
-    }
+      if (!isDragging) return;
 
-    if (event.key === "End") {
-      event.preventDefault();
-      updateController(12);
+      setNotchFromPointer(event);
     }
-  });
+  );
+
+  controllerTrack.addEventListener(
+    "pointerup",
+    () => {
+      isDragging = false;
+    }
+  );
+
+  controllerTrack.addEventListener(
+    "pointercancel",
+    () => {
+      isDragging = false;
+    }
+  );
+
+  controllerTrack.addEventListener(
+    "keydown",
+    (event) => {
+
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        updateController(currentNotchIndex - 1);
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        updateController(currentNotchIndex + 1);
+      }
+
+      if (event.key === "Home") {
+        event.preventDefault();
+        updateController(0);
+      }
+
+      if (event.key === "End") {
+        event.preventDefault();
+        updateController(12);
+      }
+
+    }
+  );
 
 
   // ========================================
@@ -271,7 +558,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const notchName = notches[currentNotchIndex];
 
-    // m/s² で計算
     let acceleration = 0;
 
     // 力行
@@ -279,10 +565,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const power = powerRatios[notchName];
 
-      // 高速になるほど加速力を弱める
+      // 車両の最高速度に応じて加速力を調整
       const speedFactor = Math.max(
         0,
-        1 - speed / 100
+        1 - speed / (maxSpeed * 1.25)
       );
 
       acceleration =
@@ -295,19 +581,24 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (notchName === "N") {
 
       if (speed > 0) {
+
         acceleration = -(
           coastingResistance +
           speed * 0.001
         );
+
       }
+
     }
 
     // ブレーキ
     else if (brakeRatios[notchName] !== undefined) {
 
-      const brakePower = brakeRatios[notchName];
+      const brakePower =
+        brakeRatios[notchName];
 
-      acceleration = -maxBraking * brakePower;
+      acceleration =
+        -maxBraking * brakePower;
     }
 
     // 速度を更新
@@ -315,16 +606,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
     speed += acceleration * 3.6 * deltaTime;
 
-    // 最高速度制限
+    // 車両ごとの最高速度制限
     speed = Math.min(speed, maxSpeed);
 
     // 逆方向には進まない
     speed = Math.max(speed, 0);
 
     // 走行距離を更新
-    const averageSpeed = (previousSpeed + speed) / 2;
+    const averageSpeed =
+      (previousSpeed + speed) / 2;
 
-    distance += (averageSpeed / 3600) * deltaTime;
+    distance +=
+      (averageSpeed / 3600) * deltaTime;
   }
 
 
@@ -334,9 +627,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateDrivingDisplay() {
 
-    const displayedSpeed = Math.floor(speed);
+    const displayedSpeed =
+      Math.floor(speed);
 
-    speedValue.textContent = displayedSpeed;
+    speedValue.textContent =
+      displayedSpeed;
 
     // 現在速度
     if (speed < 0.5) {
@@ -346,23 +641,39 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // 列車状態
-    const notchName = notches[currentNotchIndex];
+    const notchName =
+      notches[currentNotchIndex];
 
     if (speed < 0.5) {
-      instrumentInfo[1].textContent = "停車中";
-    } else if (powerRatios[notchName] !== undefined) {
-      instrumentInfo[1].textContent = "加速中";
+
+      instrumentInfo[1].textContent =
+        "停車中";
+
+    } else if (
+      powerRatios[notchName] !== undefined
+    ) {
+
+      instrumentInfo[1].textContent =
+        "加速中";
+
     } else if (notchName === "N") {
-      instrumentInfo[1].textContent = "惰行中";
+
+      instrumentInfo[1].textContent =
+        "惰行中";
+
     } else {
-      instrumentInfo[1].textContent = "減速中";
+
+      instrumentInfo[1].textContent =
+        "減速中";
     }
 
     // 信号はまだ未実装
-    instrumentInfo[2].textContent = "未設定";
+    instrumentInfo[2].textContent =
+      "未設定";
 
     // 景色の移動
-    sceneryOffset += (speed / 3.6) * 0.15;
+    sceneryOffset +=
+      (speed / 3.6) * 0.15;
 
     buildings.style.transform =
       `translateX(-${sceneryOffset % 100}px)`;
@@ -378,15 +689,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function updateDrivingMessage() {
 
-    const notchName = notches[currentNotchIndex];
+    const notchName =
+      notches[currentNotchIndex];
 
     let description = "";
 
     if (powerRatios[notchName] !== undefined) {
+
       description = "力行・加速";
+
     } else if (notchName === "N") {
+
       description = "惰行";
+
     } else {
+
       description = "ブレーキ";
     }
 
@@ -417,7 +734,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     updateDrivingDisplay();
 
-    animationFrameId = requestAnimationFrame(simulationLoop);
+    animationFrameId =
+      requestAnimationFrame(simulationLoop);
   }
 
 
@@ -434,14 +752,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     previousFrameTime = null;
 
-    animationFrameId = requestAnimationFrame(simulationLoop);
+    animationFrameId =
+      requestAnimationFrame(simulationLoop);
   }
 
 
   function stopSimulation() {
 
     if (animationFrameId !== null) {
+
       cancelAnimationFrame(animationFrameId);
+
       animationFrameId = null;
     }
 
@@ -453,25 +774,40 @@ document.addEventListener("DOMContentLoaded", () => {
   // 運転開始・終了
   // ========================================
 
-  const startDrivingButton =
-    document.getElementById("start-driving-button");
+  startDrivingButton.addEventListener(
+    "click",
+    () => {
 
-  startDrivingButton.addEventListener("click", () => {
+      if (!selectedRoute || !selectedVehicle) {
+        return;
+      }
 
-    if (!selectedRoute) return;
+      // 選択した車両の最高速度を設定
+      maxSpeed = selectedVehicle.maxSpeed;
 
-    drivingRouteName.textContent = selectedRoute;
+      // 路線名と車両名を表示
+      drivingRouteName.textContent =
+        `${selectedRoute} ／ ${selectedVehicle.name}`;
 
-    showScreen("driving-screen");
+      // 車両の最高速度を表示
+      drivingStatusLabel.textContent =
+        "車両最高速度";
 
-    startSimulation();
-  });
+      drivingStatusSpeed.textContent =
+        `${maxSpeed} km/h`;
+
+      showScreen("driving-screen");
+
+      startSimulation();
+    }
+  );
 
 
   document.getElementById("exit-driving-button")
     .addEventListener("click", () => {
 
       showScreen("route-select-screen");
+
     });
 
 
@@ -503,7 +839,10 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  volumeSetting.addEventListener("input", updateVolume);
+  volumeSetting.addEventListener(
+    "input",
+    updateVolume
+  );
 
   updateVolume();
 
@@ -518,20 +857,30 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedView =
     localStorage.getItem("stellarDrivingView");
 
-  if (savedView === "cab" || savedView === "forward") {
+  if (
+    savedView === "cab" ||
+    savedView === "forward"
+  ) {
     viewSetting.value = savedView;
   }
 
-  viewSetting.addEventListener("change", () => {
+  viewSetting.addEventListener(
+    "change",
+    () => {
 
-    localStorage.setItem(
-      "stellarDrivingView",
-      viewSetting.value
-    );
-  });
+      localStorage.setItem(
+        "stellarDrivingView",
+        viewSetting.value
+      );
+
+    }
+  );
 
 
+  // ========================================
   // 初期化
+  // ========================================
+
   updateController(7);
 
   console.log("STELLAR CITY RAILWAY");
