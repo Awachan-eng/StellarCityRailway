@@ -1,4 +1,3 @@
-
 /* ========================================
    STELLAR CITY RAILWAY
    Train Driving System
@@ -40,6 +39,60 @@ document.addEventListener("DOMContentLoaded", () => {
   homeButton.addEventListener("click", () => {
     showScreen("home-screen");
   });
+
+
+  // ========================================
+  // 路線・駅間距離データ
+  // ========================================
+
+  // distance は、その駅から次駅までの距離（km）
+  // 星都巡回線は時計回り
+  const routeData = {
+    "天の川線": [
+      { name: "星都駅", distance: 1.8 },
+      { name: "星都南駅", distance: 2.0 },
+      { name: "織姫橋駅", distance: 2.2 },
+      { name: "銀漢町駅", distance: 2.4 },
+      { name: "光が丘駅", distance: 2.0 },
+      { name: "流星公園前駅", distance: 3.0 },
+      { name: "天満原駅", distance: 2.5 },
+      { name: "汐見台駅", distance: 2.0 },
+      { name: "暁海岸駅", distance: 3.2 },
+      { name: "星都臨海空港駅", distance: null }
+    ],
+
+    "星屑線": [
+      { name: "宵待町駅", distance: 1.8 },
+      { name: "かすみ野駅", distance: 2.4 },
+      { name: "星川駅", distance: 2.7 },
+      { name: "翠星の森駅", distance: 2.6 },
+      { name: "天満原駅", distance: null }
+    ],
+
+    "銀河線": [
+      { name: "星都駅", distance: 1.6 },
+      { name: "西星都駅", distance: 2.1 },
+      { name: "月見台駅", distance: 2.0 },
+      { name: "星川駅", distance: 2.3 },
+      { name: "北斗口駅", distance: 2.8 },
+      { name: "白鳥ヶ丘駅", distance: 3.4 },
+      { name: "望星温泉駅", distance: 3.0 },
+      { name: "奥星都駅", distance: null }
+    ],
+
+    "星都巡回線": [
+      { name: "星都駅", distance: 1.5 },
+      { name: "新星都駅", distance: 1.8 },
+      { name: "銀漢町駅", distance: 2.0 },
+      { name: "宵待町駅", distance: 1.7 },
+      { name: "南星台駅", distance: 1.9 },
+      { name: "翠星の森駅", distance: 1.6 },
+      { name: "二十六夜駅", distance: 2.0 },
+      { name: "月見台駅", distance: 1.8 },
+      { name: "星都大学前駅", distance: 1.7 },
+      { name: "北星都駅", distance: 1.5 }
+    ]
+  };
 
 
   // ========================================
@@ -198,7 +251,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const startDrivingButton =
     document.getElementById("start-driving-button");
 
-  // 車両選択欄を作成
   const vehicleSelectionArea = document.createElement("div");
 
   vehicleSelectionArea.className = "vehicle-select-area";
@@ -248,14 +300,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const vehicleSelectDetail =
     document.getElementById("vehicle-select-detail");
 
-
-  // 車両選択処理
   vehicleSelectCards.forEach((card) => {
-
     card.addEventListener("click", () => {
-
       const vehicleId = card.dataset.vehicle;
-
       selectedVehicle = vehicleData[vehicleId];
 
       vehicleSelectCards.forEach((item) => {
@@ -271,25 +318,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       startDrivingButton.disabled = false;
     });
-
   });
 
-
-  // 路線選択処理
   routeCards.forEach((card) => {
-
     card.addEventListener("click", () => {
-
       selectedRoute = card.dataset.route;
-
-      // 路線を変更したら車両選択をリセット
       selectedVehicle = null;
 
       selectedRouteName.textContent =
         selectedRoute + "を選択中";
 
       resultArea.hidden = false;
-
       startDrivingButton.disabled = true;
 
       vehicleSelectCards.forEach((item) => {
@@ -309,9 +348,7 @@ document.addEventListener("DOMContentLoaded", () => {
         behavior: "smooth",
         block: "nearest"
       });
-
     });
-
   });
 
 
@@ -340,9 +377,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("driving-message");
 
   const instrumentInfo =
-    document.querySelectorAll(
-      ".instrument-info div strong"
-    );
+    document.querySelectorAll(".instrument-info div strong");
 
   const buildings =
     document.querySelector(".distant-buildings");
@@ -359,6 +394,20 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelector(
       "#driving-screen .driving-status .status-box:nth-child(3) small"
     );
+
+  const drivingSection =
+    document.getElementById("driving-section");
+
+  const nextStation =
+    document.getElementById("next-station");
+
+  // 次駅欄の下に残り距離を表示する
+  const routeStatusExtra = document.createElement("div");
+  routeStatusExtra.id = "remaining-distance";
+  routeStatusExtra.style.cssText =
+    "margin-top:5px;color:#83dfff;font-size:11px;text-align:center;";
+
+  nextStation.parentElement.appendChild(routeStatusExtra);
 
 
   // ========================================
@@ -399,22 +448,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
   let speed = 0;
   let distance = 0;
-
-  // 車両選択に応じて変更する最高速度
   let maxSpeed = 80;
 
-  // 最大加速度
   const maxAcceleration = 1.30;
-
-  // 最大ブレーキ力
   const maxBraking = 1.00;
-
-  // 惰行時の自然減速
   const coastingResistance = 0.025;
 
   let animationFrameId = null;
   let previousFrameTime = null;
   let sceneryOffset = 0;
+
+  let currentRouteStations = [];
+  let currentStationIndex = 0;
+  let remainingDistance = 0;
+  let isStoppedAtStation = false;
+
+  const stationArrivalTolerance = 0.002;
 
 
   // ========================================
@@ -422,44 +471,25 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   function updateController(index) {
-
-    currentNotchIndex = Math.max(
-      0,
-      Math.min(12, index)
-    );
+    currentNotchIndex = Math.max(0, Math.min(12, index));
 
     const notchName = notches[currentNotchIndex];
+    const percentage = (currentNotchIndex / 12) * 100;
 
-    const percentage =
-      (currentNotchIndex / 12) * 100;
-
-    controllerThumb.style.top =
-      `${percentage}%`;
-
-    controllerReadout.textContent =
-      notchName;
+    controllerThumb.style.top = `${percentage}%`;
+    controllerReadout.textContent = notchName;
 
     controllerLabels.forEach((label) => {
-
-      const labelIndex =
-        Number(label.dataset.index);
+      const labelIndex = Number(label.dataset.index);
 
       label.classList.toggle(
         "selected",
         labelIndex === currentNotchIndex
       );
-
     });
 
-    controllerTrack.setAttribute(
-      "aria-valuenow",
-      currentNotchIndex
-    );
-
-    controllerTrack.setAttribute(
-      "aria-valuetext",
-      notchName
-    );
+    controllerTrack.setAttribute("aria-valuenow", currentNotchIndex);
+    controllerTrack.setAttribute("aria-valuetext", notchName);
 
     updateDrivingMessage();
   }
@@ -470,84 +500,123 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   function setNotchFromPointer(event) {
+    const rect = controllerInner.getBoundingClientRect();
 
-    const rect =
-      controllerInner.getBoundingClientRect();
-
-    let ratio =
-      (event.clientY - rect.top) / rect.height;
-
+    let ratio = (event.clientY - rect.top) / rect.height;
     ratio = Math.max(0, Math.min(1, ratio));
 
     const index = Math.round(ratio * 12);
-
     updateController(index);
   }
 
-  controllerTrack.addEventListener(
-    "pointerdown",
-    (event) => {
+  controllerTrack.addEventListener("pointerdown", (event) => {
+    isDragging = true;
 
-      isDragging = true;
+    controllerTrack.setPointerCapture(event.pointerId);
+    setNotchFromPointer(event);
+  });
 
-      controllerTrack.setPointerCapture(
-        event.pointerId
-      );
+  controllerTrack.addEventListener("pointermove", (event) => {
+    if (!isDragging) return;
+    setNotchFromPointer(event);
+  });
 
-      setNotchFromPointer(event);
+  controllerTrack.addEventListener("pointerup", () => {
+    isDragging = false;
+  });
+
+  controllerTrack.addEventListener("pointercancel", () => {
+    isDragging = false;
+  });
+
+  controllerTrack.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowUp") {
+      event.preventDefault();
+      updateController(currentNotchIndex - 1);
     }
-  );
 
-  controllerTrack.addEventListener(
-    "pointermove",
-    (event) => {
-
-      if (!isDragging) return;
-
-      setNotchFromPointer(event);
+    if (event.key === "ArrowDown") {
+      event.preventDefault();
+      updateController(currentNotchIndex + 1);
     }
-  );
 
-  controllerTrack.addEventListener(
-    "pointerup",
-    () => {
-      isDragging = false;
+    if (event.key === "Home") {
+      event.preventDefault();
+      updateController(0);
     }
-  );
 
-  controllerTrack.addEventListener(
-    "pointercancel",
-    () => {
-      isDragging = false;
+    if (event.key === "End") {
+      event.preventDefault();
+      updateController(12);
     }
-  );
+  });
 
-  controllerTrack.addEventListener(
-    "keydown",
-    (event) => {
 
-      if (event.key === "ArrowUp") {
-        event.preventDefault();
-        updateController(currentNotchIndex - 1);
-      }
+  // ========================================
+  // 駅間走行・駅到着
+  // ========================================
 
-      if (event.key === "ArrowDown") {
-        event.preventDefault();
-        updateController(currentNotchIndex + 1);
-      }
+  function updateStationDisplay() {
+    if (!currentRouteStations.length) return;
 
-      if (event.key === "Home") {
-        event.preventDefault();
-        updateController(0);
-      }
+    const current = currentRouteStations[currentStationIndex];
+    const isCircular = selectedRoute === "星都巡回線";
+    const nextIndex = currentStationIndex + 1;
 
-      if (event.key === "End") {
-        event.preventDefault();
-        updateController(12);
-      }
-
+    if (!isCircular && nextIndex >= currentRouteStations.length) {
+      drivingSection.textContent = current.name;
+      nextStation.textContent = "終点";
+      routeStatusExtra.textContent = "終点に到着";
+      return;
     }
-  );
+
+    const next =
+      currentRouteStations[nextIndex % currentRouteStations.length];
+
+    drivingSection.textContent = current.name;
+    nextStation.textContent = next.name;
+
+    routeStatusExtra.textContent = isStoppedAtStation
+      ? "駅に停車中"
+      : `次駅まで ${remainingDistance.toFixed(2)} km`;
+  }
+
+
+  function arriveAtNextStation() {
+    if (isStoppedAtStation || !currentRouteStations.length) return;
+
+    const nextIndex = currentStationIndex + 1;
+    const isCircular = selectedRoute === "星都巡回線";
+
+    speed = 0;
+    isStoppedAtStation = true;
+
+    // 終点に到着した場合
+    if (!isCircular && nextIndex >= currentRouteStations.length) {
+      currentStationIndex = currentRouteStations.length - 1;
+
+      updateController(7);
+      updateStationDisplay();
+
+      drivingMessage.textContent =
+        `${currentRouteStations[currentStationIndex].name}に到着しました。終点です。`;
+
+      return;
+    }
+
+    // 次の駅へ到着
+    currentStationIndex =
+      nextIndex % currentRouteStations.length;
+
+    remainingDistance =
+      currentRouteStations[currentStationIndex].distance || 0;
+
+    updateController(7);
+    updateStationDisplay();
+
+    drivingMessage.textContent =
+      `${currentRouteStations[currentStationIndex].name}に到着しました。停車中です。`;
+  }
 
 
   // ========================================
@@ -555,6 +624,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   function calculateTrainMovement(deltaTime) {
+    if (isStoppedAtStation) return;
 
     const notchName = notches[currentNotchIndex];
 
@@ -562,10 +632,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 力行
     if (powerRatios[notchName] !== undefined) {
-
       const power = powerRatios[notchName];
 
-      // 車両の最高速度に応じて加速力を調整
       const speedFactor = Math.max(
         0,
         1 - speed / (maxSpeed * 1.25)
@@ -579,45 +647,41 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 惰行
     else if (notchName === "N") {
-
       if (speed > 0) {
-
         acceleration = -(
           coastingResistance +
           speed * 0.001
         );
-
       }
-
     }
 
     // ブレーキ
     else if (brakeRatios[notchName] !== undefined) {
-
-      const brakePower =
-        brakeRatios[notchName];
-
-      acceleration =
-        -maxBraking * brakePower;
+      const brakePower = brakeRatios[notchName];
+      acceleration = -maxBraking * brakePower;
     }
 
-    // 速度を更新
     const previousSpeed = speed;
 
     speed += acceleration * 3.6 * deltaTime;
-
-    // 車両ごとの最高速度制限
     speed = Math.min(speed, maxSpeed);
-
-    // 逆方向には進まない
     speed = Math.max(speed, 0);
 
-    // 走行距離を更新
-    const averageSpeed =
-      (previousSpeed + speed) / 2;
+    const averageSpeed = (previousSpeed + speed) / 2;
+    const movedDistance = (averageSpeed / 3600) * deltaTime;
 
-    distance +=
-      (averageSpeed / 3600) * deltaTime;
+    distance += movedDistance;
+
+    if (currentRouteStations.length > 0) {
+      remainingDistance = Math.max(
+        0,
+        remainingDistance - movedDistance
+      );
+
+      if (remainingDistance <= stationArrivalTolerance) {
+        arriveAtNextStation();
+      }
+    }
   }
 
 
@@ -626,54 +690,32 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   function updateDrivingDisplay() {
+    const displayedSpeed = Math.floor(speed);
+    speedValue.textContent = displayedSpeed;
 
-    const displayedSpeed =
-      Math.floor(speed);
-
-    speedValue.textContent =
-      displayedSpeed;
-
-    // 現在速度
     if (speed < 0.5) {
       instrumentInfo[0].textContent = "停車中";
     } else {
       instrumentInfo[0].textContent = "走行中";
     }
 
-    // 列車状態
-    const notchName =
-      notches[currentNotchIndex];
+    const notchName = notches[currentNotchIndex];
 
     if (speed < 0.5) {
-
-      instrumentInfo[1].textContent =
-        "停車中";
-
-    } else if (
-      powerRatios[notchName] !== undefined
-    ) {
-
-      instrumentInfo[1].textContent =
-        "加速中";
-
+      instrumentInfo[1].textContent = "停車中";
+    } else if (powerRatios[notchName] !== undefined) {
+      instrumentInfo[1].textContent = "加速中";
     } else if (notchName === "N") {
-
-      instrumentInfo[1].textContent =
-        "惰行中";
-
+      instrumentInfo[1].textContent = "惰行中";
     } else {
-
-      instrumentInfo[1].textContent =
-        "減速中";
+      instrumentInfo[1].textContent = "減速中";
     }
 
-    // 信号はまだ未実装
-    instrumentInfo[2].textContent =
-      "未設定";
+    instrumentInfo[2].textContent = "未設定";
 
-    // 景色の移動
-    sceneryOffset +=
-      (speed / 3.6) * 0.15;
+    updateStationDisplay();
+
+    sceneryOffset += (speed / 3.6) * 0.15;
 
     buildings.style.transform =
       `translateX(-${sceneryOffset % 100}px)`;
@@ -688,22 +730,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   function updateDrivingMessage() {
-
-    const notchName =
-      notches[currentNotchIndex];
+    const notchName = notches[currentNotchIndex];
 
     let description = "";
 
     if (powerRatios[notchName] !== undefined) {
-
       description = "力行・加速";
-
     } else if (notchName === "N") {
-
       description = "惰行";
-
     } else {
-
       description = "ブレーキ";
     }
 
@@ -717,21 +752,16 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
 
   function simulationLoop(timestamp) {
-
     if (previousFrameTime === null) {
       previousFrameTime = timestamp;
     }
 
-    let deltaTime =
-      (timestamp - previousFrameTime) / 1000;
-
+    let deltaTime = (timestamp - previousFrameTime) / 1000;
     previousFrameTime = timestamp;
 
-    // タブ切り替え等による急激な時間変化を防ぐ
     deltaTime = Math.min(deltaTime, 0.1);
 
     calculateTrainMovement(deltaTime);
-
     updateDrivingDisplay();
 
     animationFrameId =
@@ -740,14 +770,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   function startSimulation() {
-
     stopSimulation();
 
     speed = 0;
     distance = 0;
     sceneryOffset = 0;
 
+    currentRouteStations = routeData[selectedRoute] || [];
+    currentStationIndex = 0;
+    remainingDistance =
+      currentRouteStations[0]?.distance || 0;
+
+    isStoppedAtStation = false;
+
     updateController(7);
+    updateStationDisplay();
     updateDrivingDisplay();
 
     previousFrameTime = null;
@@ -758,11 +795,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   function stopSimulation() {
-
     if (animationFrameId !== null) {
-
       cancelAnimationFrame(animationFrameId);
-
       animationFrameId = null;
     }
 
@@ -774,40 +808,27 @@ document.addEventListener("DOMContentLoaded", () => {
   // 運転開始・終了
   // ========================================
 
-  startDrivingButton.addEventListener(
-    "click",
-    () => {
-
-      if (!selectedRoute || !selectedVehicle) {
-        return;
-      }
-
-      // 選択した車両の最高速度を設定
-      maxSpeed = selectedVehicle.maxSpeed;
-
-      // 路線名と車両名を表示
-      drivingRouteName.textContent =
-        `${selectedRoute} ／ ${selectedVehicle.name}`;
-
-      // 車両の最高速度を表示
-      drivingStatusLabel.textContent =
-        "車両最高速度";
-
-      drivingStatusSpeed.textContent =
-        `${maxSpeed} km/h`;
-
-      showScreen("driving-screen");
-
-      startSimulation();
+  startDrivingButton.addEventListener("click", () => {
+    if (!selectedRoute || !selectedVehicle) {
+      return;
     }
-  );
+
+    maxSpeed = selectedVehicle.maxSpeed;
+
+    drivingRouteName.textContent =
+      `${selectedRoute} ／ ${selectedVehicle.name}`;
+
+    drivingStatusLabel.textContent = "車両最高速度";
+    drivingStatusSpeed.textContent = `${maxSpeed} km/h`;
+
+    showScreen("driving-screen");
+    startSimulation();
+  });
 
 
   document.getElementById("exit-driving-button")
     .addEventListener("click", () => {
-
       showScreen("route-select-screen");
-
     });
 
 
@@ -829,7 +850,6 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function updateVolume() {
-
     volumeValue.textContent =
       `${volumeSetting.value}%`;
 
@@ -839,11 +859,7 @@ document.addEventListener("DOMContentLoaded", () => {
     );
   }
 
-  volumeSetting.addEventListener(
-    "input",
-    updateVolume
-  );
-
+  volumeSetting.addEventListener("input", updateVolume);
   updateVolume();
 
 
@@ -857,24 +873,16 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedView =
     localStorage.getItem("stellarDrivingView");
 
-  if (
-    savedView === "cab" ||
-    savedView === "forward"
-  ) {
+  if (savedView === "cab" || savedView === "forward") {
     viewSetting.value = savedView;
   }
 
-  viewSetting.addEventListener(
-    "change",
-    () => {
-
-      localStorage.setItem(
-        "stellarDrivingView",
-        viewSetting.value
-      );
-
-    }
-  );
+  viewSetting.addEventListener("change", () => {
+    localStorage.setItem(
+      "stellarDrivingView",
+      viewSetting.value
+    );
+  });
 
 
   // ========================================
