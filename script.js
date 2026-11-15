@@ -1,4 +1,3 @@
-JavaScript
 
 /* ========================================
    STELLAR CITY RAILWAY
