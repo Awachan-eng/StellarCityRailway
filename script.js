@@ -1,3 +1,4 @@
+
 /* ========================================
    STELLAR CITY RAILWAY
    Train Driving System
@@ -411,6 +412,84 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ========================================
+  // 列車の走行データ
+  // ========================================
+
+  let speed = 0;
+  let distance = 0;
+  let maxSpeed = 80;
+
+  const maxAcceleration = 1.30;
+  const maxBraking = 1.00;
+  const coastingResistance = 0.025;
+
+  let animationFrameId = null;
+  let previousFrameTime = null;
+  let sceneryOffset = 0;
+
+  let currentRouteStations = [];
+  let currentStationIndex = 0;
+  let remainingDistance = 0;
+  let isStoppedAtStation = false;
+
+  // 駅到着の判定誤差（m）
+  const stationArrivalTolerance = 2;
+
+
+  // ========================================
+  // 発車ボタン
+  // ========================================
+
+  const departureButton = document.createElement("button");
+
+  departureButton.id = "departure-button";
+  departureButton.type = "button";
+  departureButton.textContent = "発車する";
+  departureButton.hidden = true;
+
+  departureButton.style.cssText = [
+    "display:none",
+    "margin:10px auto 0",
+    "padding:10px 28px",
+    "border:1px solid #83dfff",
+    "border-radius:8px",
+    "background:linear-gradient(180deg,#276b91,#174568)",
+    "color:#ffffff",
+    "font-size:14px",
+    "font-weight:bold",
+    "cursor:pointer"
+  ].join(";");
+
+  drivingMessage.insertAdjacentElement(
+    "afterend",
+    departureButton
+  );
+
+  departureButton.addEventListener("click", () => {
+    if (!isStoppedAtStation) return;
+
+    // 終点からは発車できない
+    const isCircular = selectedRoute === "星都巡回線";
+
+    const isTerminal =
+      !isCircular &&
+      currentStationIndex === currentRouteStations.length - 1;
+
+    if (isTerminal) return;
+
+    isStoppedAtStation = false;
+
+    departureButton.hidden = true;
+    departureButton.style.display = "none";
+
+    updateStationDisplay();
+
+    drivingMessage.textContent =
+      "発車準備完了。マスコンをP1～P7に入れると発車します。";
+  });
+
+
+  // ========================================
   // マスコン設定
   // ========================================
 
@@ -440,31 +519,6 @@ document.addEventListener("DOMContentLoaded", () => {
     B4: 0.75,
     B5: 1.00
   };
-
-
-  // ========================================
-  // 列車の走行データ
-  // ========================================
-
-  let speed = 0;
-  let distance = 0;
-  let maxSpeed = 80;
-
-  const maxAcceleration = 1.30;
-  const maxBraking = 1.00;
-  const coastingResistance = 0.025;
-
-  let animationFrameId = null;
-  let previousFrameTime = null;
-  let sceneryOffset = 0;
-
-  let currentRouteStations = [];
-  let currentStationIndex = 0;
-  let remainingDistance = 0;
-  let isStoppedAtStation = false;
-
-  // 駅到着の判定誤差（m）
-  const stationArrivalTolerance = 2;
 
 
   // ========================================
@@ -554,7 +608,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
   // ========================================
-  // 駅間走行・駅到着
+  // 駅情報の表示
   // ========================================
 
   function updateStationDisplay() {
@@ -583,6 +637,10 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
+  // ========================================
+  // 駅到着処理
+  // ========================================
+
   function arriveAtNextStation() {
     if (isStoppedAtStation || !currentRouteStations.length) return;
 
@@ -598,6 +656,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
       updateController(7);
       updateStationDisplay();
+
+      departureButton.hidden = true;
+      departureButton.style.display = "none";
 
       drivingMessage.textContent =
         `${currentRouteStations[currentStationIndex].name}に到着しました。終点です。`;
@@ -615,8 +676,11 @@ document.addEventListener("DOMContentLoaded", () => {
     updateController(7);
     updateStationDisplay();
 
+    departureButton.hidden = false;
+    departureButton.style.display = "block";
+
     drivingMessage.textContent =
-      `${currentRouteStations[currentStationIndex].name}に到着しました。停車中です。`;
+      `${currentRouteStations[currentStationIndex].name}に到着しました。発車する場合はボタンを押してください。`;
   }
 
 
@@ -787,6 +851,9 @@ document.addEventListener("DOMContentLoaded", () => {
       currentRouteStations[0]?.distance || 0;
 
     isStoppedAtStation = false;
+
+    departureButton.hidden = true;
+    departureButton.style.display = "none";
 
     updateController(7);
     updateStationDisplay();
