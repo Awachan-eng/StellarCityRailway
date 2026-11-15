@@ -1,3 +1,4 @@
+JavaScript
 
 /* ========================================
    STELLAR CITY RAILWAY
@@ -432,8 +433,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let remainingDistance = 0;
   let isStoppedAtStation = false;
 
-  // 駅到着の判定誤差（m）
-  const stationArrivalTolerance = 2;
+  // 直近の停車位置と評価
+  let lastStopOffset = null;
+  let lastStopGrade = "";
 
 
   // ========================================
@@ -478,6 +480,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (isTerminal) return;
 
     isStoppedAtStation = false;
+    lastStopOffset = null;
+    lastStopGrade = "";
 
     departureButton.hidden = true;
     departureButton.style.display = "none";
@@ -621,7 +625,14 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!isCircular && nextIndex >= currentRouteStations.length) {
       drivingSection.textContent = current.name;
       nextStation.textContent = "終点";
-      routeStatusExtra.textContent = "終点に到着";
+
+      if (isStoppedAtStation && lastStopGrade) {
+        routeStatusExtra.textContent =
+          `停車位置：${getStoppingPositionText(lastStopOffset)} ／ ${lastStopGrade}`;
+      } else {
+        routeStatusExtra.textContent = "終点に到着";
+      }
+
       return;
     }
 
@@ -631,9 +642,16 @@ document.addEventListener("DOMContentLoaded", () => {
     drivingSection.textContent = current.name;
     nextStation.textContent = next.name;
 
-    routeStatusExtra.textContent = isStoppedAtStation
-      ? "駅に停車中"
-      : `次駅まで ${Math.ceil(remainingDistance)} m`;
+    if (isStoppedAtStation) {
+      routeStatusExtra.textContent =
+        `停車位置：${getStoppingPositionText(lastStopOffset)} ／ ${lastStopGrade}`;
+    } else if (remainingDistance >= 0) {
+      routeStatusExtra.textContent =
+        `次駅まで ${Math.ceil(remainingDistance)} m`;
+    } else {
+      routeStatusExtra.textContent =
+        `駅を ${Math.ceil(Math.abs(remainingDistance))} m通過`;
+    }
   }
 
 
@@ -641,11 +659,47 @@ document.addEventListener("DOMContentLoaded", () => {
   // 駅到着処理
   // ========================================
 
+  // 停車位置の評価
+  function evaluateStoppingPosition(offset) {
+    const absoluteOffset = Math.abs(offset);
+
+    if (absoluteOffset < 0.5) return "Perfect!";
+    if (absoluteOffset <= 5) return "Umbelievable!";
+    if (absoluteOffset <= 10) return "Amazing!";
+    if (absoluteOffset <= 15) return "Good!";
+    if (absoluteOffset <= 20) return "OK!";
+
+    return "評価対象外";
+  }
+
+  // 停車位置の表示用テキスト
+  function getStoppingPositionText(offset) {
+    const roundedOffset = Math.round(Math.abs(offset));
+
+    if (roundedOffset === 0) return "0mちょうど";
+    if (offset > 0) return `駅の手前 ${roundedOffset}m`;
+
+    return `駅を ${roundedOffset}m通過`;
+  }
+
   function arriveAtNextStation() {
     if (isStoppedAtStation || !currentRouteStations.length) return;
 
     const nextIndex = currentStationIndex + 1;
     const isCircular = selectedRoute === "星都巡回線";
+
+    // 目標停車位置からのずれを保存
+    lastStopOffset = remainingDistance;
+    lastStopGrade = evaluateStoppingPosition(lastStopOffset);
+
+    const stoppedStation =
+      (!isCircular && nextIndex >= currentRouteStations.length)
+        ? currentRouteStations[currentRouteStations.length - 1]
+        : currentRouteStations[nextIndex % currentRouteStations.length];
+
+    const stoppedStationName = stoppedStation.name;
+    const stoppingPositionText =
+      getStoppingPositionText(lastStopOffset);
 
     speed = 0;
     isStoppedAtStation = true;
@@ -661,7 +715,7 @@ document.addEventListener("DOMContentLoaded", () => {
       departureButton.style.display = "none";
 
       drivingMessage.textContent =
-        `${currentRouteStations[currentStationIndex].name}に到着しました。終点です。`;
+        `${stoppedStationName}に到着しました。終点です。停車評価：${lastStopGrade}（${stoppingPositionText}）。`;
 
       return;
     }
@@ -680,7 +734,7 @@ document.addEventListener("DOMContentLoaded", () => {
     departureButton.style.display = "block";
 
     drivingMessage.textContent =
-      `${currentRouteStations[currentStationIndex].name}に到着しました。発車する場合はボタンを押してください。`;
+      `${stoppedStationName}に到着しました。停車評価：${lastStopGrade}（${stoppingPositionText}）。発車する場合はボタンを押してください。`;
   }
 
 
@@ -741,15 +795,15 @@ document.addEventListener("DOMContentLoaded", () => {
     distance += movedDistance;
 
     if (currentRouteStations.length > 0) {
-      // 残り距離も m 単位で減算
-      remainingDistance = Math.max(
-        0,
-        remainingDistance - movedDistance
-      );
+      // 駅の基準位置を通過しても、列車は自動停止しない。
+      // 残り距離がマイナスになれば駅を通過したことを表す。
+      remainingDistance -= movedDistance;
+    }
 
-      if (remainingDistance <= stationArrivalTolerance) {
-        arriveAtNextStation();
-      }
+    // ブレーキなどで列車が完全に停止した瞬間に停車位置を評価する
+    if (previousSpeed > 0 && speed <= 0) {
+      speed = 0;
+      arriveAtNextStation();
     }
   }
 
