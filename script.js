@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ],
 
     "星屑線": [
-      { name: "宵待町駅", distance: 1458 },
+      { name: "宵待町駅", distance: 958 },
       { name: "かすみ野駅", distance: 1203 },
       { name: "星川駅", distance: 1439 },
       { name: "翠星の森駅", distance: 1324 },
@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", () => {
     ],
 
     "銀河線": [
-      { name: "星都駅", distance: 1871 },
+      { name: "星都駅", distance: 871 },
       { name: "西星都駅", distance: 1059 },
       { name: "月見台駅", distance: 1042 },
       { name: "星川駅", distance: 1246 },
@@ -463,7 +463,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let remainingDistance = 0;
   let isStoppedAtStation = false;
 
-  const stationArrivalTolerance = 0.002;
+  // 駅到着の判定誤差（m）
+  const stationArrivalTolerance = 2;
 
 
   // ========================================
@@ -578,7 +579,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     routeStatusExtra.textContent = isStoppedAtStation
       ? "駅に停車中"
-      : `次駅まで ${remainingDistance.toFixed(2)} km`;
+      : `次駅まで ${Math.ceil(remainingDistance)} m`;
   }
 
 
@@ -663,16 +664,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const previousSpeed = speed;
 
+    // 速度は km/h のまま管理
     speed += acceleration * 3.6 * deltaTime;
     speed = Math.min(speed, maxSpeed);
     speed = Math.max(speed, 0);
 
+    // 平均速度（km/h）を m/s に変換して移動距離を計算
     const averageSpeed = (previousSpeed + speed) / 2;
-    const movedDistance = (averageSpeed / 3600) * deltaTime;
+    const movedDistance = (averageSpeed / 3.6) * deltaTime;
 
+    // 累計走行距離も m 単位
     distance += movedDistance;
 
     if (currentRouteStations.length > 0) {
+      // 残り距離も m 単位で減算
       remainingDistance = Math.max(
         0,
         remainingDistance - movedDistance
