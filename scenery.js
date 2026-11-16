@@ -1,4 +1,3 @@
-JavaScript
 
 /* ========================================
    STELLAR CITY RAILWAY
@@ -36,7 +35,6 @@ JavaScript
     "北星都駅": { description: "アリーナ・大型ショッピングモールの再開発エリア", icons: ["🏟️", "🛍️", "🏙️"], theme: "city" }
   };
 
-  // 各路線の駅順と駅間距離（m）。環状線は時計回り。
   const routeData = {
     "天の川線": [
       ["星都駅", 947], ["星都南駅", 1018], ["織姫橋駅", 1183],
@@ -63,14 +61,20 @@ JavaScript
 
   function addStyles() {
     const style = document.createElement("style");
+
     style.textContent = `
-      .forward-window { isolation: isolate; }
-      .driving-placeholder { display: none; }
+      .forward-window {
+        isolation: isolate;
+      }
+
+      .driving-placeholder {
+        display: none !important;
+      }
 
       #stellar-scenery {
         position: absolute;
         inset: 0;
-        z-index: 2;
+        z-index: 1;
         overflow: hidden;
         pointer-events: none;
         --approach: 0;
@@ -82,34 +86,35 @@ JavaScript
         right: -20%;
         bottom: 37%;
         height: 42%;
-        opacity: .62;
+        opacity: .7;
         background:
-          linear-gradient(to top, rgba(35,55,67,.95) 0 58%, transparent 59%) 0 100% / 11% 100% repeat-x,
-          linear-gradient(to top, rgba(55,77,87,.9) 0 78%, transparent 79%) 5% 100% / 8% 100% repeat-x,
-          linear-gradient(to top, rgba(43,66,76,.92) 0 66%, transparent 67%) 2% 100% / 14% 100% repeat-x;
+          linear-gradient(to top, #354e58 0 58%, transparent 59%) 0 100% / 11% 100% repeat-x,
+          linear-gradient(to top, #526b70 0 78%, transparent 79%) 5% 100% / 8% 100% repeat-x,
+          linear-gradient(to top, #405b65 0 66%, transparent 67%) 2% 100% / 14% 100% repeat-x;
         background-position-x: var(--scroll);
-        transition: opacity .4s ease;
       }
 
       #stellar-scenery .scene-landmarks {
         position: absolute;
         left: 50%;
-        top: calc(22% + var(--approach) * 19%);
+        bottom: 35%;
         display: flex;
         align-items: flex-end;
         justify-content: center;
         gap: clamp(7px, 2.2vw, 25px);
-        width: 88%;
-        transform: translate(-50%, -50%) scale(calc(.48 + var(--approach) * .52));
+        width: 90%;
+        transform:
+          translateX(-50%)
+          scale(calc(.45 + var(--approach) * .65));
         transform-origin: center bottom;
-        opacity: calc(.18 + var(--approach) * .82);
-        filter: drop-shadow(0 5px 4px rgba(0,0,0,.28));
+        opacity: calc(.35 + var(--approach) * .65);
         white-space: nowrap;
+        filter: drop-shadow(0 5px 4px rgba(0,0,0,.35));
       }
 
       #stellar-scenery .scene-icon {
         display: inline-block;
-        font-size: clamp(29px, 7.5vw, 78px);
+        font-size: clamp(32px, 8vw, 82px);
         line-height: 1;
       }
 
@@ -117,61 +122,75 @@ JavaScript
         position: absolute;
         top: 9px;
         right: 9px;
-        max-width: 85%;
         padding: 5px 9px;
-        border: 1px solid rgba(255,255,255,.2);
         border-radius: 5px;
-        background: rgba(5,12,28,.68);
-        color: #fff;
+        background: rgba(5,12,28,.78);
+        color: white;
         font-size: clamp(9px, 1.5vw, 12px);
         text-align: right;
-        text-shadow: 0 1px 3px #000;
       }
 
       #stellar-scenery.theme-city {
-        background: linear-gradient(to bottom, rgba(104,157,190,.04), rgba(74,100,112,.14));
+        background: linear-gradient(to bottom, transparent 45%, rgba(65,85,100,.25));
       }
+
       #stellar-scenery.theme-river {
-        background: linear-gradient(to bottom, rgba(112,177,194,.04) 0 54%, rgba(39,126,151,.34) 55% 72%, transparent 73%);
+        background: linear-gradient(to bottom, transparent 45%, rgba(39,126,151,.48) 65%, transparent 82%);
       }
+
       #stellar-scenery.theme-suburb {
-        background: linear-gradient(to bottom, rgba(150,185,174,.04), rgba(75,116,85,.2));
+        background: linear-gradient(to bottom, transparent 45%, rgba(75,116,85,.35));
       }
+
       #stellar-scenery.theme-park {
-        background: linear-gradient(to bottom, rgba(147,191,169,.05), rgba(42,111,67,.27));
+        background: linear-gradient(to bottom, transparent 45%, rgba(42,111,67,.4));
       }
+
       #stellar-scenery.theme-coast {
-        background: linear-gradient(to bottom, rgba(118,190,211,.04) 0 48%, rgba(38,139,171,.42) 49% 75%, transparent 76%);
+        background: linear-gradient(to bottom, transparent 42%, rgba(38,139,171,.5) 62%, transparent 82%);
       }
+
       #stellar-scenery.theme-airport {
-        background: linear-gradient(to bottom, rgba(174,198,209,.05), rgba(100,128,142,.25));
+        background: linear-gradient(to bottom, transparent 45%, rgba(100,128,142,.35));
       }
+
       #stellar-scenery.theme-historic {
-        background: linear-gradient(to bottom, rgba(194,164,124,.04), rgba(128,92,58,.2));
+        background: linear-gradient(to bottom, transparent 45%, rgba(128,92,58,.35));
       }
+
       #stellar-scenery.theme-mountain {
         background:
           linear-gradient(140deg, transparent 0 35%, rgba(66,105,89,.55) 36% 48%, transparent 49%),
-          linear-gradient(35deg, transparent 0 42%, rgba(79,119,99,.58) 43% 58%, transparent 59%),
-          linear-gradient(to bottom, rgba(147,180,193,.04), rgba(58,93,78,.16));
+          linear-gradient(35deg, transparent 0 42%, rgba(79,119,99,.58) 43% 58%, transparent 59%);
       }
 
-      @media (prefers-reduced-motion: reduce) {
-        #stellar-scenery .scene-landmarks { transition: none; }
+      .railway-ground,
+      .railway-track,
+      .rail-left,
+      .rail-right {
+        z-index: 2;
       }
     `;
+
     document.head.appendChild(style);
   }
 
   function startScenery() {
     const windowElement = document.querySelector(".forward-window");
-    const currentStationElement = document.getElementById("driving-section");
-    const nextStationElement = document.getElementById("next-station");
+    const currentStation = document.getElementById("driving-section");
+    const nextStation = document.getElementById("next-station");
     const speedElement = document.getElementById("speed-value");
-    const routeNameElement = document.getElementById("driving-route-name");
-    const drivingMessageElement = document.getElementById("driving-message");
+    const routeElement = document.getElementById("driving-route-name");
+    const messageElement = document.getElementById("driving-message");
 
-    if (!windowElement || !currentStationElement || !nextStationElement || !speedElement) {
+    if (
+      !windowElement ||
+      !currentStation ||
+      !nextStation ||
+      !speedElement ||
+      !messageElement
+    ) {
+      console.error("星都電鉄：風景表示に必要な画面要素が見つかりません。");
       return;
     }
 
@@ -185,14 +204,17 @@ JavaScript
     let lastSignature = "";
 
     function render() {
-      const routeText = routeNameElement ? routeNameElement.textContent : "";
-      const routeName = Object.keys(routeData).find(name => routeText.includes(name));
-      const route = routeName ? routeData[routeName] : null;
+      const routeText = routeElement ? routeElement.textContent : "";
+      const routeName = Object.keys(routeData).find(name =>
+        routeText.includes(name)
+      );
 
-      const currentName = currentStationElement.textContent.trim();
-      const nextName = nextStationElement.textContent.trim();
-      const isStopped = drivingMessageElement &&
-        drivingMessageElement.textContent.includes("に到着しました");
+      const route = routeName ? routeData[routeName] : null;
+      const currentName = currentStation.textContent.trim();
+      const nextName = nextStation.textContent.trim();
+      const message = messageElement.textContent;
+
+      const isStopped = message.includes("に到着しました");
 
       let targetName = nextName;
       let progress = 0;
@@ -202,33 +224,42 @@ JavaScript
         targetName = currentName;
         progress = 1;
       } else if (route) {
-        const currentIndex = route.findIndex(item => item[0] === currentName);
-        let targetIndex = route.findIndex(item => item[0] === nextName);
+        const currentIndex = route.findIndex(item =>
+          item[0] === currentName
+        );
 
-        if (routeName === "星都巡回線" && nextName === "星都駅") {
-          targetIndex = 0;
-        }
-
-        if (currentIndex >= 0 && targetIndex >= 0) {
+        if (currentIndex >= 0) {
           segmentLength = route[currentIndex][1] || 1000;
         }
 
-        const distanceElement = document.getElementById("remaining-distance");
-        const distanceText = distanceElement ? distanceElement.textContent : "";
-        const remainingMatch = distanceText.match(/次駅まで\s*([\d,]+)\s*m/);
-        const passedMatch = distanceText.match(/駅を\s*([\d,]+)\s*m通過/);
+        const remainingMatch = message.match(
+          /次駅まで\s*([\d,]+)\s*m/
+        );
+
+        const passedMatch = message.match(
+          /駅を\s*([\d,]+)\s*m通過/
+        );
 
         if (remainingMatch) {
-          const remaining = Number(remainingMatch[1].replace(/,/g, ""));
-          progress = Math.max(0, Math.min(1, 1 - remaining / segmentLength));
+          const remaining = Number(
+            remainingMatch[1].replace(/,/g, "")
+          );
+
+          progress = Math.max(
+            0,
+            Math.min(1, 1 - remaining / segmentLength)
+          );
         } else if (passedMatch) {
           progress = 1;
         }
       }
 
-      if (!targetName || targetName === "未設定" || targetName === "終点") {
+      if (
+        !targetName ||
+        targetName === "未設定" ||
+        targetName === "終点"
+      ) {
         targetName = currentName;
-        progress = isStopped ? 1 : 0;
       }
 
       const scenery = sceneryByStation[targetName] || {
@@ -237,17 +268,28 @@ JavaScript
         theme: "city"
       };
 
-      const signature = `${targetName}|${Math.round(progress * 20)}`;
+      const signature =
+        `${targetName}|${Math.round(progress * 100)}`;
+
       if (signature !== lastSignature) {
         lastSignature = signature;
+
         layer.className = `theme-${scenery.theme}`;
-        layer.style.setProperty("--approach", progress.toFixed(3));
+        layer.style.setProperty(
+          "--approach",
+          progress.toFixed(3)
+        );
+
         layer.innerHTML = `
           <div class="scene-skyline"></div>
           <div class="scene-landmarks">
-            ${scenery.icons.map(icon => `<span class="scene-icon">${icon}</span>`).join("")}
+            ${scenery.icons.map(icon =>
+              `<span class="scene-icon">${icon}</span>`
+            ).join("")}
           </div>
-          <div class="scene-name">${targetName}　${scenery.description}</div>
+          <div class="scene-name">
+            ${targetName}　${scenery.description}
+          </div>
         `;
       }
 
@@ -256,13 +298,22 @@ JavaScript
 
     function animate(timestamp) {
       if (!lastTime) lastTime = timestamp;
-      const delta = Math.min((timestamp - lastTime) / 1000, 0.05);
+
+      const delta = Math.min(
+        (timestamp - lastTime) / 1000,
+        0.05
+      );
+
       lastTime = timestamp;
 
       const speed = render();
+
       if (speed > 0) {
         scroll += speed * delta * 1.5;
-        layer.style.setProperty("--scroll", `${-scroll}px`);
+        layer.style.setProperty(
+          "--scroll",
+          `${-scroll}px`
+        );
       }
 
       requestAnimationFrame(animate);
@@ -273,10 +324,14 @@ JavaScript
   }
 
   addStyles();
+
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", startScenery, { once: true });
+    document.addEventListener(
+      "DOMContentLoaded",
+      startScenery,
+      { once: true }
+    );
   } else {
     startScenery();
   }
 })();
-
