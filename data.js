@@ -34,7 +34,7 @@ const LINES = [
     color: "#00e5ff",
     loop: false,
     stations: ["seito", "seitominami", "orihimebashi", "ginkancho", "hikarigaoka", "ryuseikoenmae", "tenmanbara", "shiomidai", "akatsukikaigan", "seitorinkaikuko"],
-    distances: [1.8, 2.0, 2.2, 2.4, 2.0, 3.0, 2.5, 2.0, 3.2]
+    distancesM: [947, 1018, 1183, 1206, 1062, 1591, 1284, 1075, 1612]
   },
   {
     id: "hoshiyoi",
@@ -43,4 +43,4 @@ const LINES = [
     color: "#ff8c00",
     loop: false,
     stations: ["yoimachicho", "kasumino", "hoshikawa", "suiseinomori", "tenmanbara"],
-    distances: [1.8, 2.4, 2.7, 2.6]
+    distancesM: [958, 1203, 1439, 1324]
