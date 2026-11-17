@@ -49,3 +49,751 @@
       display: grid;
       grid-template-columns: minmax(0, 1fr) 190px 105px;
       gap: 12px;
+      width: 100%;
+      align-items: stretch;
+    }
+
+    #main-content:has(#driving-screen.active) {
+      width: min(100% - 20px, 1400px);
+      max-width: none;
+      padding-top: 15px;
+      padding-bottom: 15px;
+    }
+
+    .driving-main {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .driving-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      background: rgba(20, 34, 65, 0.95);
+      border: 1px solid rgba(164, 203, 255, 0.2);
+      border-radius: 9px;
+    }
+
+    .driving-topbar strong { font-size: 14px; }
+
+    .driving-topbar span {
+      color: #aab8d4;
+      font-size: 11px;
+    }
+
+    .driving-exit {
+      border: 1px solid rgba(164, 203, 255, 0.3);
+      border-radius: 6px;
+      padding: 7px 11px;
+      background: #263c60;
+      color: white;
+      cursor: pointer;
+    }
+
+    .forward-window {
+      position: relative;
+      flex: 1;
+      min-height: 210px;
+      overflow: hidden;
+      border: 2px solid #344c70;
+      border-radius: 10px;
+      background: linear-gradient(
+        to bottom,
+        #477ca4 0%,
+        #8bb9c9 45%,
+        #526d55 46%,
+        #253d31 100%
+      );
+    }
+
+    .sky-cloud {
+      position: absolute;
+      top: 17%;
+      left: 15%;
+      width: 65px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.65);
+      box-shadow: 20px -8px 0 3px rgba(255,255,255,0.55);
+    }
+
+    .distant-buildings {
+      position: absolute;
+      bottom: 36%;
+      left: 0;
+      width: 100%;
+      height: 30%;
+      background:
+        linear-gradient(to top, #536d72 0 65%, transparent 65%) 5% 100% / 55px 100% no-repeat,
+        linear-gradient(to top, #607b80 0 80%, transparent 80%) 18% 100% / 75px 100% no-repeat,
+        linear-gradient(to top, #526b75 0 55%, transparent 55%) 35% 100% / 65px 100% no-repeat,
+        linear-gradient(to top, #647e80 0 90%, transparent 90%) 57% 100% / 70px 100% no-repeat,
+        linear-gradient(to top, #526b75 0 70%, transparent 70%) 80% 100% / 65px 100% no-repeat;
+      opacity: 0.85;
+    }
+
+    .railway-ground {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 38%;
+      background: linear-gradient(#52604b, #27352c);
+    }
+
+    .railway-track {
+      position: absolute;
+      left: 35%;
+      right: 35%;
+      bottom: 0;
+      height: 39%;
+      background: linear-gradient(90deg, #34383c, #74787b 48%, #34383c);
+      clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+    }
+
+    .rail-left, .rail-right {
+      position: absolute;
+      bottom: 0;
+      width: 5px;
+      height: 43%;
+      background: #c3c7ca;
+      transform-origin: bottom;
+    }
+
+    .rail-left {
+      left: 42%;
+      transform: rotate(9deg);
+    }
+
+    .rail-right {
+      right: 42%;
+      transform: rotate(-9deg);
+    }
+
+    .driving-placeholder {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      padding: 6px 10px;
+      border-radius: 5px;
+      background: rgba(5, 12, 28, 0.65);
+      color: white;
+      font-size: 10px;
+    }
+
+    .driving-status {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .status-box {
+      padding: 10px;
+      text-align: center;
+      border: 1px solid rgba(164, 203, 255, 0.2);
+      border-radius: 8px;
+      background: rgba(20, 34, 65, 0.9);
+    }
+
+    .status-box small {
+      display: block;
+      color: #aab8d4;
+      font-size: 10px;
+    }
+
+    .status-box strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .instrument-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 15px 10px;
+      border: 1px solid rgba(164, 203, 255, 0.2);
+      border-radius: 10px;
+      background: linear-gradient(160deg, #1b2d4b, #0d172b);
+    }
+
+    .instrument-panel h3 {
+      font-size: 13px;
+      text-align: center;
+      color: #aab8d4;
+    }
+
+    .speed-display {
+      padding: 16px 5px;
+      text-align: center;
+      border-radius: 9px;
+      background: #07101e;
+      border: 1px solid #405878;
+    }
+
+    .speed-display strong {
+      display: block;
+      font-size: 39px;
+      color: #83dfff;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .speed-display small {
+      color: #aab8d4;
+      font-size: 10px;
+    }
+
+    .instrument-info {
+      display: grid;
+      gap: 9px;
+    }
+
+    .instrument-info div {
+      padding: 8px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      text-align: center;
+    }
+
+    .instrument-info small {
+      display: block;
+      color: #aab8d4;
+      font-size: 9px;
+    }
+
+    .instrument-info strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+    }
+
+    .master-controller {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 5px;
+      border: 1px solid rgba(164, 203, 255, 0.2);
+      border-radius: 10px;
+      background: linear-gradient(160deg, #1b2d4b, #0d172b);
+      user-select: none;
+    }
+
+    .master-controller h3 {
+      font-size: 12px;
+      color: #f5f8ff;
+    }
+
+    .controller-readout {
+      width: 100%;
+      padding: 7px 3px;
+      border: 1px solid #526987;
+      border-radius: 6px;
+      background: #07101e;
+      color: #83dfff;
+      font-size: 17px;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .controller-track {
+      position: relative;
+      width: 100%;
+      height: 324px;
+      max-height: calc(100vh - 150px);
+      min-height: 210px;
+      touch-action: none;
+      cursor: grab;
+    }
+
+    .controller-track:active {
+      cursor: grabbing;
+    }
+
+    .controller-track-inner {
+      position: absolute;
+      inset: 12px 0;
+    }
+
+    .controller-rail {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 55px;
+      width: 7px;
+      transform: translateX(-50%);
+      border-radius: 5px;
+      background: linear-gradient(90deg, #101a2a, #71839a, #101a2a);
+      box-shadow: 0 0 5px rgba(0,0,0,0.7);
+    }
+
+    .controller-labels {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
+    }
+
+    .notch-label {
+      width: 34px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      color: #c6d2e4;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    .notch-label.selected {
+      color: #83dfff;
+      background: rgba(131, 223, 255, 0.13);
+    }
+
+    .notch-label.brake-label {
+      color: #ffb0b0;
+    }
+
+    .notch-label.brake-label.selected {
+      color: #ffb0b0;
+      background: rgba(255, 156, 156, 0.15);
+    }
+
+    .controller-thumb {
+      position: absolute;
+      top: 58.333%;
+      left: 55px;
+      width: 30px;
+      height: 23px;
+      transform: translate(-50%, -50%);
+      border: 2px solid #dce8f8;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #9ceaff, #3986ad);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+      pointer-events: none;
+    }
+
+    .controller-thumb::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 12px;
+      height: 4px;
+      transform: translate(-50%, -50%);
+      border-radius: 3px;
+      background: #17324b;
+    }
+
+    .controller-current-caption {
+      color: #aab8d4;
+      font-size: 9px;
+      text-align: center;
+    }
+
+    .driving-message {
+      grid-column: 1 / -1;
+      padding: 8px;
+      border-radius: 7px;
+      background: rgba(20, 34, 65, 0.95);
+      color: #aab8d4;
+      text-align: center;
+      font-size: 10px;
+    }
+
+    @media (max-height: 520px) {
+      .site-header { display: none; }
+
+      #game { min-height: 100dvh; }
+
+      #main-content:has(#driving-screen.active) {
+        min-height: 100dvh;
+        margin: 0 auto;
+      }
+
+      #driving-screen.active {
+        min-height: calc(100dvh - 30px);
+        grid-template-columns: minmax(0, 1fr) 155px 85px;
+        gap: 8px;
+      }
+
+      .forward-window { min-height: 120px; }
+
+      .instrument-panel { padding: 8px; }
+
+      .speed-display strong { font-size: 30px; }
+
+      .controller-track {
+        height: 270px;
+        min-height: 190px;
+      }
+
+      .controller-rail,
+      .controller-thumb { left: 49px; }
+
+      .driving-message { padding: 5px; }
+
+      footer { display: none; }
+    }
+
+    @media (max-width: 700px) and (orientation: landscape) {
+      #driving-screen.active {
+        grid-template-columns: minmax(0, 1fr) 125px 75px;
+        gap: 6px;
+      }
+
+      .instrument-panel { padding: 8px 5px; }
+
+      .speed-display strong { font-size: 29px; }
+
+      .controller-track { height: 260px; }
+
+      .controller-rail,
+      .controller-thumb { left: 45px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="orientation-overlay">
+    <div class="rotate-icon">📱 ↻</div>
+    <strong>端末を横向きにしてください</strong>
+    <p>星都電鉄は横画面に最適化されています。</p>
+  </div>
+
+  <div id="game">
+    <header class="site-header">
+      <button class="brand" id="home-button" aria-label="ホームへ戻る">
+        <span class="brand-mark">✦</span>
+        <span class="brand-text">
+          <strong>星都電鉄</strong>
+          <small>STELLAR CITY RAILWAY</small>
+        </span>
+      </button>
+      <span class="version">DEVELOPMENT BUILD 0.3</span>
+    </header>
+
+    <main id="main-content">
+
+      <section class="screen active" id="home-screen">
+        <div class="hero">
+          <p class="eyebrow">WELCOME TO STELLAR CITY</p>
+          <h1>星都電鉄</h1>
+          <p class="english-title">STELLAR CITY RAILWAY</p>
+          <p class="intro">
+            星々をつなぐ、鉄道の旅へ。<br>
+            星都の街を駆け抜ける列車の運転士になろう。
+          </p>
+        </div>
+
+        <nav class="main-menu" aria-label="メインメニュー">
+          <button class="menu-button primary" data-screen="route-select-screen">
+            <span class="menu-icon">🚆</span>
+            <span class="menu-label">
+              <strong>運転を始める</strong>
+              <small>路線・列車を選択</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="menu-button" data-screen="map-screen">
+            <span class="menu-icon">🗺️</span>
+            <span class="menu-label">
+              <strong>路線図</strong>
+              <small>路線と駅を確認</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="menu-button" data-screen="vehicle-screen">
+            <span class="menu-icon">🚄</span>
+            <span class="menu-label">
+              <strong>車両図鑑</strong>
+              <small>星都電鉄の車両を紹介</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="menu-button" data-screen="settings-screen">
+            <span class="menu-icon">⚙️</span>
+            <span class="menu-label">
+              <strong>設定</strong>
+              <small>音量・運転画面など</small>
+            </span>
+            <span class="menu-arrow">›</span>
+          </button>
+        </nav>
+      </section>
+
+      <section class="screen" id="route-select-screen">
+        <div class="page-heading">
+          <p class="eyebrow">START YOUR JOURNEY</p>
+          <h2>運転する路線を選択</h2>
+          <p>運転したい路線を選んでください。</p>
+        </div>
+
+        <div class="route-list">
+          <button class="route-card" data-route="天の川線">
+            <span class="route-color route-blue"></span>
+            <span><strong>天の川線</strong><small>星都駅 ～ 星都臨海空港駅</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="route-card" data-route="星屑線">
+            <span class="route-color route-orange"></span>
+            <span><strong>星屑線</strong><small>宵待町駅 ～ 天満原駅</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="route-card" data-route="銀河線">
+            <span class="route-color route-purple"></span>
+            <span><strong>銀河線</strong><small>星都駅 ～ 奥星都駅</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+
+          <button class="route-card" data-route="星都巡回線">
+            <span class="route-color route-green"></span>
+            <span><strong>星都巡回線</strong><small>星都駅を起点とする環状路線</small></span>
+            <span class="menu-arrow">›</span>
+          </button>
+        </div>
+
+        <div id="route-selection-result" class="selection-result" hidden>
+          <h3 id="selected-route-name"></h3>
+          <p>この路線で運転を開始できます。</p>
+          <button id="start-driving-button" class="menu-button primary" style="margin-top:15px;width:100%;justify-content:center;">
+            🚆 この路線で運転する
+          </button>
+        </div>
+      </section>
+
+      <section class="screen" id="map-screen">
+        <div class="page-heading">
+          <p class="eyebrow">NETWORK GUIDE</p>
+          <h2>星都電鉄 路線図</h2>
+          <p>星都の街を結ぶ4つの路線。</p>
+        </div>
+
+        <div class="station-route-list">
+          <article class="line-card">
+            <h3><span class="route-color route-blue"></span>天の川線</h3>
+            <p>星都駅 → 星都南駅 → 織姫橋駅 → 銀漢町駅 → 光が丘駅 → 流星公園前駅 → 天満原駅 → 汐見台駅 → 暁海岸駅 → 星都臨海空港駅</p>
+          </article>
+
+          <article class="line-card">
+            <h3><span class="route-color route-orange"></span>星屑線</h3>
+            <p>宵待町駅 → かすみ野駅 → 星川駅 → 翠星の森駅 → 天満原駅</p>
+          </article>
+
+          <article class="line-card">
+            <h3><span class="route-color route-purple"></span>銀河線</h3>
+            <p>星都駅 → 西星都駅 → 月見台駅 → 星川駅 → 北斗口駅 → 白鳥ヶ丘駅 → 望星温泉駅 → 奥星都駅</p>
+          </article>
+
+          <article class="line-card">
+            <h3><span class="route-color route-green"></span>星都巡回線</h3>
+            <p>星都駅 → 新星都駅 → 銀漢町駅 → 宵待町駅 → 南星台駅 → 翠星の森駅 → 二十六夜駅 → 月見台駅 → 星都大学前駅 → 北星都駅 → 星都駅</p>
+            <small>時計回り・反時計回り／普通列車のみ</small>
+          </article>
+        </div>
+      </section>
+
+      <section class="screen" id="vehicle-screen">
+        <div class="page-heading">
+          <p class="eyebrow">ROLLING STOCK</p>
+          <h2>車両図鑑</h2>
+          <p>星都電鉄で活躍する車両。</p>
+        </div>
+
+        <div class="vehicle-list">
+          <article class="vehicle-card">
+            <div class="vehicle-visual vehicle-1000">
+              <span>1000</span><small>SERIES</small>
+            </div>
+            <div class="vehicle-info">
+              <h3>1000系</h3>
+              <span class="service-tag">普通</span>
+              <p>正面は水色。白い車体に水色の上部ラインと、走行路線のカラーを使った下部ラインを配置。</p>
+            </div>
+          </article>
+
+          <article class="vehicle-card">
+            <div class="vehicle-visual vehicle-2000">
+              <span>2000</span><small>SERIES</small>
+            </div>
+            <div class="vehicle-info">
+              <h3>2000系</h3>
+              <span class="service-tag">急行</span>
+              <p>正面は赤色。白い車体に赤色の上部ラインと、走行路線のカラーを使った下部ラインを配置。</p>
+            </div>
+          </article>
+
+          <article class="vehicle-card">
+            <div class="vehicle-visual vehicle-7000">
+              <span>7000</span><small>SERIES</small>
+            </div>
+            <div class="vehicle-info">
+              <h3>7000系</h3>
+              <span class="service-tag">観光特急</span>
+              <p>正面は紫色。白い車体に紫色の上部ラインと、走行路線のカラーを使った下部ラインを配置。</p>
+            </div>
+          </article>
+        </div>
+
+        <p class="note">※車両のイラスト・詳細性能は今後追加します。</p>
+      </section>
+
+      <section class="screen" id="settings-screen">
+        <div class="page-heading">
+          <p class="eyebrow">GAME SETTINGS</p>
+          <h2>設定</h2>
+          <p>ゲームの基本設定を変更できます。</p>
+        </div>
+
+        <div class="settings-panel">
+          <div class="setting-item">
+            <label for="volume-setting">音量</label>
+            <div class="setting-control">
+              <input type="range" id="volume-setting" min="0" max="100" value="70">
+              <output id="volume-value">70%</output>
+            </div>
+          </div>
+
+          <div class="setting-item">
+            <label for="view-setting">運転画面</label>
+            <select id="view-setting">
+              <option value="cab">運転台視点</option>
+              <option value="forward">前方視点</option>
+            </select>
+          </div>
+
+          <p class="note">設定はこのブラウザに保存されます。</p>
+        </div>
+      </section>
+
+      <section class="screen" id="driving-screen">
+        <div class="driving-main">
+          <div class="driving-topbar">
+            <div>
+              <strong id="driving-route-name">天の川線</strong>
+              <span>　運転準備中</span>
+            </div>
+            <button class="driving-exit" id="exit-driving-button">終了</button>
+          </div>
+
+          <div class="forward-window">
+            <div class="sky-cloud"></div>
+            <div class="distant-buildings"></div>
+            <div class="railway-ground"></div>
+            <div class="railway-track"></div>
+            <div class="rail-left"></div>
+            <div class="rail-right"></div>
+            <div class="driving-placeholder">前方風景（開発中）</div>
+          </div>
+
+          <div class="driving-status">
+              <small>運転区間</small>
+              <strong id="driving-section">始発駅</strong>
+            </div>
+            <div class="status-box">
+              <small>次の駅</small>
+              <strong id="next-station">未設定</strong>
+            </div>
+            <div class="status-box">
+              <small>制限速度</small>
+              <strong>80 km/h</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="instrument-panel">
+          <h3>運転計器</h3>
+
+          <div class="speed-display">
+            <strong id="speed-value">0</strong>
+            <small>km/h</small>
+          </div>
+
+          <div class="instrument-info">
+            <div>
+              <small>現在速度</small>
+              <strong>停車中</strong>
+            </div>
+            <div>
+              <small>列車状態</small>
+              <strong>準備中</strong>
+            </div>
+            <div>
+              <small>信号</small>
+              <strong style="color:#ff7777;">停止</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="master-controller">
+          <h3>マスコン</h3>
+
+          <div class="controller-readout" id="controller-readout">N</div>
+
+          <div
+            class="controller-track"
+            id="controller-track"
+            role="slider"
+            tabindex="0"
+            aria-label="マスコン"
+            aria-orientation="vertical"
+            aria-valuemin="0"
+            aria-valuemax="12"
+            aria-valuenow="7"
+            aria-valuetext="N"
+          >
+            <div class="controller-track-inner" id="controller-track-inner">
+              <div class="controller-rail"></div>
+
+              <div class="controller-labels" id="controller-labels">
+                <span class="notch-label" data-index="0">P7</span>
+                <span class="notch-label" data-index="1">P6</span>
+                <span class="notch-label" data-index="2">P5</span>
+                <span class="notch-label" data-index="3">P4</span>
+                <span class="notch-label" data-index="4">P3</span>
+                <span class="notch-label" data-index="5">P2</span>
+                <span class="notch-label" data-index="6">P1</span>
+                <span class="notch-label" data-index="7">N</span>
+                <span class="notch-label brake-label" data-index="8">B1</span>
+                <span class="notch-label brake-label" data-index="9">B2</span>
+                <span class="notch-label brake-label" data-index="10">B3</span>
+                <span class="notch-label brake-label" data-index="11">B4</span>
+                <span class="notch-label brake-label" data-index="12">B5</span>
+              </div>
+
+              <div class="controller-thumb" id="controller-thumb"></div>
+            </div>
+          </div>
+
+          <div class="controller-current-caption">
+            上：力行 ／ 下：ブレーキ
+          </div>
+        </div>
+
+        <div class="driving-message" id="driving-message">
+          レバーをスライドしてマスコンを操作できます。列車の走行機能は今後実装します。
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>STELLAR CITY RAILWAY</span>
+      <span>© Stellar City Railway Project</span>
+    </footer>
+  </div>
+</body>
+</html>
